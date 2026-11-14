@@ -35,6 +35,9 @@ function renderAt(path: string) {
             <Route element={<RequireRole roles={['admin']} />}>
               <Route path="/admin" element={<p>tela-admin</p>} />
             </Route>
+            <Route element={<RequireRole roles={['admin', 'gestor']} />}>
+              <Route path="/gestao" element={<p>tela-gestao</p>} />
+            </Route>
           </Route>
         </Route>
       </Routes>
@@ -85,6 +88,15 @@ describe('guardas de rota', () => {
     state.current = { ...base, session: {} as never, profile: profile({ role: 'admin' }) }
     renderAt('/admin')
     expect(screen.queryByText('tela-admin')).not.toBeNull()
+  })
+  it('libera gestor na gestão e bloqueia colaborador', () => {
+    state.current = { ...base, session: {} as never, profile: profile({ role: 'gestor' }) }
+    const { unmount } = renderAt('/gestao')
+    expect(screen.queryByText('tela-gestao')).not.toBeNull()
+    unmount()
+    state.current = { ...base, session: {} as never, profile: profile({ role: 'colaborador' }) }
+    renderAt('/gestao')
+    expect(screen.queryByText('tela-gestao')).toBeNull()
   })
   it('mostra erro quando o perfil não carrega', () => {
     state.current = { ...base, session: {} as never, profile: null, profileError: true }

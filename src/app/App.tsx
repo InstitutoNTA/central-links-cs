@@ -11,6 +11,9 @@ import { CategoriesAdminPage } from '../features/admin/CategoriesAdminPage'
 import { CoursesAdminPage } from '../features/admin/CoursesAdminPage'
 import { LinksAdminPage } from '../features/admin/LinksAdminPage'
 import { UsersAdminPage } from '../features/admin/UsersAdminPage'
+import { HistoryPage } from '../features/management/HistoryPage'
+import { ManagementLayout } from '../features/management/ManagementLayout'
+import { UsagePage } from '../features/management/UsagePage'
 import { AppLayout } from './AppLayout'
 import { RequireActive, RequireAuth, RequireRole } from './guards'
 import { NotFoundPage } from './NotFoundPage'
@@ -29,6 +32,13 @@ export function App() {
             <Route index element={<HomePage />} />
             <Route path="cursos/:slug" element={<CoursePage />} />
             <Route path="perfil" element={<ProfilePage />} />
+            <Route element={<RequireRole roles={['admin', 'gestor']} />}>
+              <Route path="gestao" element={<ManagementLayout />}>
+                <Route index element={<Navigate to="uso" replace />} />
+                <Route path="uso" element={<UsagePage />} />
+                <Route path="historico" element={<HistoryPage />} />
+              </Route>
+            </Route>
             <Route element={<RequireRole roles={['admin']} />}>
               <Route path="admin" element={<AdminLayout />}>
                 <Route index element={<Navigate to="links" replace />} />

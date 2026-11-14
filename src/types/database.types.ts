@@ -306,6 +306,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      usage_by_course: {
+        Args: { p_days: number }
+        Returns: { course_id: string | null; name: string; color: string | null; clicks: number }[]
+      }
+      usage_by_day: {
+        Args: { p_days: number }
+        Returns: { day: string; clicks: number }[]
+      }
+      usage_by_user: {
+        Args: { p_days: number }
+        Returns: { user_id: string; full_name: string | null; email: string; clicks: number; last_click: string | null }[]
+      }
+      usage_overview: {
+        Args: { p_days: number }
+        Returns: { total_clicks: number; active_users: number; links_clicked: number }[]
+      }
+      usage_top_links: {
+        Args: { p_days: number; p_limit: number }
+        Returns: { link_id: string; title: string; clicks: number }[]
+      }
       admin_save_link: {
         Args: {
           p_active: boolean
