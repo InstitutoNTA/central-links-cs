@@ -13,6 +13,8 @@ npm install
 npm run dev
 ```
 
+Verificações: `npm run lint`, `npm test`, `npm run build`.
+
 ## Segurança
 
 - Só a chave **pública** do Supabase vai para o navegador. A chave secreta (`service_role`) nunca entra neste repositório.
@@ -21,6 +23,8 @@ npm run dev
 ## Documentação
 
 - [Arquitetura](docs/arquitetura.md)
+- [Guia de operação](docs/operacao.md)
+- [Testes](docs/testes.md)
 
 ## Etapas
 

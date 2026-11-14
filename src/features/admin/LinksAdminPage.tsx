@@ -129,7 +129,7 @@ export function LinksAdminPage() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Buscar nos links cadastrados…"
           aria-label="Buscar nos links cadastrados"
-          className="min-w-0 flex-1 rounded-lg border border-grafite-700 bg-grafite-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-azul focus:outline-none"
+          className="min-w-0 flex-1 rounded-lg border border-grafite-700 bg-grafite-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-400 focus:border-azul focus:outline-none"
         />
         <Button onClick={() => setEditing('new')}>Novo link</Button>
       </div>
@@ -145,8 +145,8 @@ export function LinksAdminPage() {
           {shown.map((l) => (
             <li key={l.id} className="flex flex-wrap items-center gap-3 py-3">
               <div className="min-w-0 flex-1">
-                <p className={`font-medium ${l.active ? 'text-slate-100' : 'text-slate-500 line-through'}`}>{l.title}</p>
-                <p className="truncate text-xs text-slate-500">{l.url}</p>
+                <p className={`font-medium ${l.active ? 'text-slate-100' : 'text-slate-400 line-through'}`}>{l.title}</p>
+                <p className="truncate text-xs text-slate-400">{l.url}</p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {l.kind === 'mec' && <Badge tone="azul">MEC</Badge>}
                   {!l.active && <Badge tone="vermelho">Desativado</Badge>}

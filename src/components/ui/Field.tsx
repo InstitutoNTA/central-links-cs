@@ -15,9 +15,9 @@ export function Field({ label, hint, className = '', ...rest }: Props) {
       <input
         id={id}
         {...rest}
-        className={`w-full rounded-lg border border-grafite-700 bg-grafite-950 px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:border-azul focus:outline-none focus:ring-1 focus:ring-azul ${className}`}
+        className={`w-full rounded-lg border border-grafite-700 bg-grafite-950 px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:border-azul focus:outline-none focus:ring-1 focus:ring-azul ${className}`}
       />
-      {hint && <p className="text-xs text-slate-500">{hint}</p>}
+      {hint && <p className="text-xs text-slate-400">{hint}</p>}
     </div>
   )
 }

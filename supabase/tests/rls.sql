@@ -13,6 +13,11 @@ declare
   got text;
   res text[] := '{}';
   fails int := 0;
+  -- Contagens reais já existentes no banco, para o teste continuar valendo com dados de verdade.
+  b_cursos bigint := (select count(*) from public.courses where active);
+  b_links bigint := (select count(*) from public.links where active);
+  b_cliques bigint := (select count(*) from public.link_clicks);
+  b_perfis bigint := (select count(*) from public.profiles);
 begin
   insert into auth.users (id, email) values
     (u_str, 'estranho@teste.invalid'), (u_col, 'colab@teste.invalid'),
@@ -31,8 +36,8 @@ begin
       (3,  'conta nao ativada nao ve cursos',         u_str, 'authenticated', 'select * from public.courses', 'rows:0'),
       (4,  'conta nao ativada nao ve links',          u_str, 'authenticated', 'select * from public.links', 'rows:0'),
       (5,  'conta nao ativada ve so o proprio perfil',u_str, 'authenticated', 'select * from public.profiles', 'rows:1'),
-      (6,  'colaborador ve os 5 cursos',              u_col, 'authenticated', 'select * from public.courses', 'rows:5'),
-      (7,  'colaborador ve links ativos',             u_col, 'authenticated', 'select * from public.links', 'rows:1'),
+      (6,  'colaborador ve os 5 cursos',              u_col, 'authenticated', 'select * from public.courses', 'rows:' || b_cursos),
+      (7,  'colaborador ve links ativos',             u_col, 'authenticated', 'select * from public.links', 'rows:' || (b_links + 1)),
       (8,  'colaborador ve so o proprio perfil',      u_col, 'authenticated', 'select * from public.profiles', 'rows:1'),
       (9,  'colaborador nao cria link',               u_col, 'authenticated', $q$insert into public.links (title, url) values ('X', 'https://exemplo.invalid/x')$q$, 'error'),
       (10, 'colaborador nao edita link',              u_col, 'authenticated', $q$update public.links set title = 'X'$q$, 'ok:0'),
@@ -47,8 +52,8 @@ begin
       (19, 'colaborador nao forja data do clique',    u_col, 'authenticated', $q$insert into public.link_clicks (link_id, user_id, clicked_at) select id, auth.uid(), now() - interval '30 days' from public.links limit 1$q$, 'error'),
       (20, 'colaborador nao apaga link',              u_col, 'authenticated', 'delete from public.links', 'error'),
       (21, 'gestor ve historico',                     u_ges, 'authenticated', 'select * from public.audit_log limit 1', 'rows:1'),
-      (22, 'gestor ve cliques',                       u_ges, 'authenticated', 'select * from public.link_clicks', 'rows:1'),
-      (23, 'gestor ve todos os perfis',               u_ges, 'authenticated', 'select * from public.profiles', 'rows:4'),
+      (22, 'gestor ve cliques',                       u_ges, 'authenticated', 'select * from public.link_clicks', 'rows:' || (b_cliques + 1)),
+      (23, 'gestor ve todos os perfis',               u_ges, 'authenticated', 'select * from public.profiles', 'rows:' || (b_perfis + 4)),
       (24, 'gestor nao cria link',                    u_ges, 'authenticated', $q$insert into public.links (title, url) values ('X', 'https://exemplo.invalid/x')$q$, 'error'),
       (25, 'gestor nao edita curso',                  u_ges, 'authenticated', $q$update public.courses set color = '#000000'$q$, 'ok:0'),
       (26, 'admin cria categoria',                    u_adm, 'authenticated', $q$insert into public.categories (name, slug) values ('Teste 2', 'teste-2')$q$, 'ok:1'),
@@ -59,7 +64,7 @@ begin
       (31, 'MEC nao vale para 2 cursos',              u_adm, 'authenticated', $q$insert into public.link_courses (link_id, course_id) select l.id, c.id from public.links l, public.courses c where l.title = 'MEC1' and c.slug = 'mba-ia-direito'$q$, 'error'),
       (32, 'link exige https',                        u_adm, 'authenticated', $q$insert into public.links (title, url) values ('X', 'http://exemplo.invalid/x')$q$, 'error'),
       (33, 'link nao aceita javascript:',             u_adm, 'authenticated', $q$insert into public.links (title, url) values ('X', 'javascript:alert(1)')$q$, 'error'),
-      (34, 'admin ve todos os perfis',                u_adm, 'authenticated', 'select * from public.profiles', 'rows:4'),
+      (34, 'admin ve todos os perfis',                u_adm, 'authenticated', 'select * from public.profiles', 'rows:' || (b_perfis + 4)),
       (35, 'admin desativa um usuario',               u_adm, 'authenticated', $q$update public.profiles set active = false where email = 'estranho@teste.invalid'$q$, 'ok:1'),
       (36, 'admin nao apaga link',                    u_adm, 'authenticated', 'delete from public.links', 'error'),
       (38, 'MEC 2 liga a outro curso sem conflito',   u_adm, 'authenticated', $q$insert into public.link_courses (link_id, course_id) select l.id, c.id from public.links l, public.courses c where l.title = 'MEC2' and c.slug = 'mba-ia-direito'$q$, 'ok:1')

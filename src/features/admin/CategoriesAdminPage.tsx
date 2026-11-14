@@ -71,7 +71,7 @@ export function CategoriesAdminPage() {
         <ul className="divide-y divide-grafite-700">
           {categories.data?.map((c) => (
             <li key={c.id} className="flex items-center gap-3 py-3">
-              <span className={`flex-1 ${c.active ? 'text-slate-100' : 'text-slate-500 line-through'}`}>{c.name}</span>
+              <span className={`flex-1 ${c.active ? 'text-slate-100' : 'text-slate-400 line-through'}`}>{c.name}</span>
               {!c.active && <Badge tone="vermelho">Desativada</Badge>}
               <Button variant="ghost" onClick={() => setEditing(c)} className="!px-3 !py-1.5">Editar</Button>
             </li>

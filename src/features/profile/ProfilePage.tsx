@@ -37,15 +37,15 @@ export function ProfilePage() {
         <h1 className="text-2xl font-semibold text-slate-100">Meu perfil</h1>
         <dl className="mt-4 space-y-3 text-sm">
           <div>
-            <dt className="text-slate-500">Nome</dt>
+            <dt className="text-slate-400">Nome</dt>
             <dd className="text-slate-200">{profile?.full_name?.trim() || 'Não informado'}</dd>
           </div>
           <div>
-            <dt className="text-slate-500">E-mail</dt>
+            <dt className="text-slate-400">E-mail</dt>
             <dd className="text-slate-200">{profile?.email}</dd>
           </div>
           <div>
-            <dt className="text-slate-500">Perfil de acesso</dt>
+            <dt className="text-slate-400">Perfil de acesso</dt>
             <dd className="text-slate-200">{profile ? ROLE_LABELS[profile.role] : ''}</dd>
           </div>
         </dl>

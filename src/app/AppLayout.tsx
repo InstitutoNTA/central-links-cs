@@ -12,6 +12,9 @@ export function AppLayout() {
 
   return (
     <div className="min-h-screen bg-grafite-950">
+      <a href="#conteudo" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-azul focus:px-3 focus:py-2 focus:text-sm focus:text-grafite-950">
+        Pular para o conteúdo
+      </a>
       <header className="border-b border-grafite-700 bg-grafite-900">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
           <span className="text-sm font-semibold tracking-wide text-slate-100">
@@ -46,7 +49,7 @@ export function AppLayout() {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-8">
+      <main id="conteudo" tabIndex={-1} className="mx-auto max-w-6xl px-4 py-8 focus:outline-none">
         <Outlet />
       </main>
     </div>

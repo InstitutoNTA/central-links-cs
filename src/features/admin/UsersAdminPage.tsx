@@ -55,7 +55,7 @@ export function UsersAdminPage() {
                           editar nome
                         </button>
                       </p>
-                      <p className="truncate text-xs text-slate-500">{u.email}</p>
+                      <p className="truncate text-xs text-slate-400">{u.email}</p>
                     </>
                   )}
                   <div className="mt-1.5 flex gap-1.5">

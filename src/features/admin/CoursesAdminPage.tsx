@@ -75,7 +75,7 @@ export function CoursesAdminPage() {
           {courses.data?.map((c) => (
             <li key={c.id} className="flex items-center gap-3 py-3">
               <span aria-hidden className="h-3.5 w-3.5 rounded-full" style={{ background: c.color }} />
-              <span className={`flex-1 ${c.active ? 'text-slate-100' : 'text-slate-500 line-through'}`}>{c.name}</span>
+              <span className={`flex-1 ${c.active ? 'text-slate-100' : 'text-slate-400 line-through'}`}>{c.name}</span>
               {!c.active && <Badge tone="vermelho">Desativado</Badge>}
               <Button variant="ghost" onClick={() => setEditing(c)} className="!px-3 !py-1.5">Editar</Button>
             </li>

@@ -23,7 +23,7 @@ export function ExternalLink({ link, className = '', children }: { link: Catalog
 
 /** "MEC" logo abaixo do nome do curso. Sem link cadastrado, mostra aviso (nada é inventado). */
 export function MecLink({ mec }: { mec: CatalogLink | undefined }) {
-  if (!mec) return <span className="text-xs text-slate-500">MEC: ainda não cadastrado</span>
+  if (!mec) return <span className="text-xs text-slate-400">MEC: ainda não cadastrado</span>
   return (
     <ExternalLink link={mec} className="text-xs font-medium text-azul hover:underline">
       MEC ↗
@@ -51,7 +51,7 @@ export function LinkItem({ link, categoryName }: { link: CatalogLink; categoryNa
         aria-pressed={isFavorite}
         aria-label={isFavorite ? `Remover ${link.title} dos favoritos` : `Favoritar ${link.title}`}
         onClick={() => toggle.mutate({ linkId: link.id, favorite: !isFavorite })}
-        className={`absolute right-3 top-3 rounded-md p-1 text-lg leading-none transition focus:outline-none focus-visible:ring-2 focus-visible:ring-azul/60 ${isFavorite ? 'text-vermelho' : 'text-slate-500 hover:text-slate-300'}`}
+        className={`absolute right-3 top-3 rounded-md p-1 text-lg leading-none transition focus:outline-none focus-visible:ring-2 focus-visible:ring-azul/60 ${isFavorite ? 'text-vermelho' : 'text-slate-400 hover:text-slate-300'}`}
       >
         {isFavorite ? '★' : '☆'}
       </button>
@@ -102,7 +102,7 @@ export function SearchBox({ value, onChange }: { value: string; onChange: (v: st
       onChange={(e) => onChange(e.target.value)}
       placeholder="Buscar links por nome ou descrição…"
       aria-label="Buscar links"
-      className="w-full rounded-lg border border-grafite-700 bg-grafite-900 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:border-azul focus:outline-none focus:ring-1 focus:ring-azul"
+      className="w-full rounded-lg border border-grafite-700 bg-grafite-900 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:border-azul focus:outline-none focus:ring-1 focus:ring-azul"
     />
   )
 }
@@ -116,7 +116,7 @@ export function CourseCard({ course, mec, count }: { course: { slug: string; nam
       <div className="mt-1">
         <MecLink mec={mec} />
       </div>
-      <p className="mt-2 text-xs text-slate-500">{count === 1 ? '1 link' : `${count} links`}</p>
+      <p className="mt-2 text-xs text-slate-400">{count === 1 ? '1 link' : `${count} links`}</p>
     </li>
   )
 }
