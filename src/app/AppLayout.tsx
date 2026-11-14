@@ -17,8 +17,11 @@ export function AppLayout() {
       </a>
       <header className="border-b border-grafite-700 bg-grafite-900">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-          <span className="text-sm font-semibold tracking-wide text-slate-100">
-            Central de Links <span className="text-azul">CS</span>
+          <span className="flex items-center gap-3">
+            <img src="/logo-nta.png" alt="Instituto NTA" width={53} height={36} className="h-9 w-auto rounded-md" />
+            <span className="text-sm font-semibold tracking-wide text-slate-100">
+              Central de Links <span className="text-azul">CS</span>
+            </span>
           </span>
           <nav className="flex flex-1 items-center gap-1" aria-label="Principal">
             <NavLink to="/" end className={linkClass}>

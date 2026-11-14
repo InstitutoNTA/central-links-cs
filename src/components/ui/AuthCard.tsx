@@ -10,6 +10,7 @@ export function AuthCard({ title, subtitle, children }: Props) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-grafite-950 px-4 py-10">
       <div className="w-full max-w-md">
+        <img src="/logo-nta.png" alt="Instituto NTA" width={106} height={72} className="mx-auto mb-4 h-[72px] w-auto rounded-lg" />
         <p className="mb-6 text-center text-xs font-medium uppercase tracking-[0.2em] text-azul">
           InstitutoNTA · Customer Success
         </p>
