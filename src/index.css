@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-grafite-950: #14161a;
+  --color-grafite-900: #1b1e24;
+  --color-grafite-800: #252932;
+  --color-grafite-700: #323845;
+  --color-azul: #6f9cf0;
+  --color-vermelho: #e07a7a;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  @apply bg-grafite-950 text-slate-100 antialiased;
+}
