@@ -4,7 +4,7 @@ Atualizado na etapa 7 (14/11/2026). Atualize este arquivo sempre que uma decisã
 
 ## Visão geral
 
-Site React + TypeScript + Tailwind publicado no Netlify. Login, banco de dados e regras de acesso ficam no Supabase (projeto `central-links-cs`). Não há servidor próprio. O código fica no GitHub (`InstitutoNTA/central-links-cs`, público).
+Site React + TypeScript + Tailwind publicado no Cloudflare Pages (https://central-links-cs.pages.dev). Login, banco de dados e regras de acesso ficam no Supabase (projeto `central-links-cs`). Não há servidor próprio. O código fica no GitHub (`InstitutoNTA/central-links-cs`, público).
 
 ## Decisões confirmadas
 
@@ -99,13 +99,14 @@ A regra é aplicada no banco (RLS em todas as tabelas). Esconder botões na tela
 - **MEC:** pertence a um único curso; cada curso tem no máximo um MEC ativo.
 - **Último administrador:** o banco recusa rebaixar ou desativar o último admin ativo.
 - **Histórico:** `audit_log` registra inclusões, alterações e exclusões, com autor, antes e depois.
-- **Navegador:** cabeçalhos de segurança no Netlify (política de conteúdo restrita ao próprio site e ao Supabase, bloqueio de iframe, sem indexação em buscadores). Só a chave **pública** do Supabase vai ao navegador.
+- **Navegador:** cabeçalhos de segurança no Cloudflare Pages (arquivo `public/_headers`) (política de conteúdo restrita ao próprio site e ao Supabase, bloqueio de iframe, sem indexação em buscadores). Só a chave **pública** do Supabase vai ao navegador.
 - **Dependências:** `npm audit` sem vulnerabilidades conhecidas na data desta revisão.
 
 ## Hospedagem
 
-- GitHub → Netlify (build `npm run build`, pasta `dist`), publicação automática a cada envio para `main`.
-- Variáveis públicas no Netlify: `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`.
+- GitHub → Cloudflare Pages (build `npm run build`, pasta `dist`), publicação automática a cada envio para `main`.
+- Hospedagem anterior: Netlify, abandonada em 14/11/2026 por falta de créditos. O `netlify.toml` permanece no repositório apenas como referência e não é usado.
+- Variáveis públicas no Cloudflare Pages: `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`.
 - A verificação automática do GitHub (CI) roda análise de código, testes e build.
 
 ## Migrações

@@ -3,7 +3,7 @@
 Portal interno do time de Customer Success para reunir os acessos usados no dia a dia
 (pós-graduações, plataformas, CRM, formulários, relatórios).
 
-**Stack:** React + TypeScript + Tailwind CSS · Supabase (login, banco, regras de acesso) · Netlify · GitHub.
+**Stack:** React + TypeScript + Tailwind CSS · Supabase (login, banco, regras de acesso) · Cloudflare Pages · GitHub.
 
 ## Rodar localmente
 

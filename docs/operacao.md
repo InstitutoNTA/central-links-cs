@@ -41,5 +41,5 @@ update public.profiles set role = 'admin', active = true where email = 'EMAIL_DA
 
 - **Projeto gratuito do Supabase pausa após cerca de 7 dias sem uso.** Se a Central ficar fora do ar e o login falhar, entre em supabase.com, abra o projeto `central-links-cs` e clique em restaurar. O uso diário do time evita a pausa.
 - **Cópias de segurança:** no plano gratuito não há restauração para um ponto no tempo. Para guardar uma cópia dos links, exporte as tabelas `links`, `courses`, `categories` e `link_courses` pelo Table Editor (botão de exportar CSV).
-- **Chave secreta** (`service_role`): nunca colocar no código, no Netlify do site nem no GitHub.
+- **Chave secreta** (`service_role`): nunca colocar no código, no Cloudflare Pages do site nem no GitHub.
 - **Nenhum item é apagado de verdade.** Use sempre "Desativar".
