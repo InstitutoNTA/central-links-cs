@@ -66,6 +66,22 @@ A regra é aplicada no banco (RLS em todas as tabelas). Esconder botões na tela
 - Variáveis públicas no Netlify: `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`.
 - Domínio próprio: depois, se for preciso.
 
+## Segurança do banco (etapa 1)
+
+- **Contas novas nascem inativas.** O cadastro cria o perfil como `colaborador` e `active = false`. Sem um admin ativar, a pessoa não vê nenhum dado (cursos, links, favoritos). Isso vale mesmo que o cadastro público do Supabase esteja ligado.
+- **Visitantes sem login** não têm permissão nenhuma nas tabelas.
+- **Funções de apoio** (`is_member`, `is_manager`, `is_admin`, `check_mec`) ficam no schema `private`, que a API não expõe.
+- **Cliques e favoritos:** cada pessoa só grava os próprios. A data do clique é sempre a do servidor.
+- **Links:** só `https://` (bloqueia `http:` e `javascript:`).
+- **MEC:** um link `mec` pertence a um único curso, e cada curso tem no máximo um MEC ativo.
+- **Histórico:** `audit_log` registra inclusões, alterações e exclusões de perfis, cursos, categorias, links e vínculos, com autor, antes e depois.
+- **Testes:** `supabase/tests/rls.sql` cria usuários fictícios, confere 38 situações de permissão e desfaz tudo.
+- **Primeiro administrador:** será promovido na etapa 2, depois do primeiro login, por comando direto no banco. O e-mail não fica gravado no código, porque o repositório é público.
+
+## Migrações
+
+`supabase/migrations/` guarda, em ordem: estrutura (1), regras de acesso (2), cursos (3), correção da validação do MEC (4) e índice (5). Cores dos cursos são provisórias e editáveis.
+
 ## Observação sobre versões
 
 O esqueleto foi criado com as versões atuais das ferramentas (React 19, Vite 8, Tailwind 4, TypeScript 7), que são mais novas que as citadas na primeira proposta (React 18).
