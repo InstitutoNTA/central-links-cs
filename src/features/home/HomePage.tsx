@@ -1,15 +1,83 @@
+import { useMemo, useState } from 'react'
 import { useAuth } from '../auth/useAuth'
+import { CategoryChips, CourseCard, EmptyNote, GroupedLinks, LinkItem, SearchBox } from '../catalog/components'
+import { filterLinks, generalLinks, groupByCategory, linksForCourse, mecFor } from '../catalog/filters'
+import { useCategories, useCourses, useLinks } from '../catalog/queries'
 
 export function HomePage() {
   const { profile } = useAuth()
   const firstName = (profile?.full_name?.trim() || profile?.email || '').split(/[\s@]/)[0]
+  const courses = useCourses()
+  const categories = useCategories()
+  const links = useLinks()
+  const [query, setQuery] = useState('')
+  const [categoryId, setCategoryId] = useState<string | null>(null)
+
+  const allLinks = useMemo(() => links.data ?? [], [links.data])
+  const cats = useMemo(() => categories.data ?? [], [categories.data])
+  const searching = query.trim() !== '' || categoryId !== null
+  const results = useMemo(() => filterLinks(allLinks, { query, categoryId }), [allLinks, query, categoryId])
+  const general = useMemo(() => filterLinks(generalLinks(allLinks), { categoryId }), [allLinks, categoryId])
+  const catName = (id: string | null) => cats.find((c) => c.id === id)?.name
+
+  const failed = courses.isError || categories.isError || links.isError
+  const loading = courses.isPending || categories.isPending || links.isPending
 
   return (
-    <section>
-      <h1 className="text-2xl font-semibold text-slate-100">Olá, {firstName}</h1>
-      <p className="mt-2 max-w-xl text-sm text-slate-400">
-        A Central ainda não tem links cadastrados. Os cursos, as categorias e os links aparecerão aqui nas próximas etapas.
-      </p>
-    </section>
+    <div className="space-y-8">
+      <header>
+        <h1 className="text-2xl font-semibold text-slate-100">Olá, {firstName}</h1>
+        <p className="mt-1 text-sm text-slate-400">Encontre rapidamente os acessos do dia a dia do time de CS.</p>
+      </header>
+
+      <div className="space-y-3">
+        <SearchBox value={query} onChange={setQuery} />
+        <CategoryChips categories={cats} value={categoryId} onChange={setCategoryId} />
+      </div>
+
+      {failed && <p role="alert" className="text-sm text-vermelho">Não foi possível carregar os dados. Atualize a página.</p>}
+      {loading && !failed && <p role="status" className="text-sm text-slate-400">Carregando…</p>}
+
+      {!loading && !failed && searching && (
+        <section>
+          <h2 className="mb-3 text-lg font-medium text-slate-100">Resultados ({results.length})</h2>
+          {results.length === 0 ? (
+            <EmptyNote>Nenhum link encontrado. Tente outras palavras.</EmptyNote>
+          ) : (
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {results.map((l) => (
+                <LinkItem key={l.id} link={l} categoryName={catName(l.category_id)} />
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
+      {!loading && !failed && !searching && (
+        <>
+          <section>
+            <h2 className="mb-3 text-lg font-medium text-slate-100">Cursos</h2>
+            {(courses.data ?? []).length === 0 ? (
+              <EmptyNote>Nenhum curso cadastrado.</EmptyNote>
+            ) : (
+              <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {courses.data!.map((c) => (
+                  <CourseCard key={c.id} course={c} mec={mecFor(allLinks, c.id)} count={linksForCourse(allLinks, c.id).length} />
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section>
+            <h2 className="mb-3 text-lg font-medium text-slate-100">Links gerais</h2>
+            {general.length === 0 ? (
+              <EmptyNote>Ainda não há links gerais cadastrados.</EmptyNote>
+            ) : (
+              <GroupedLinks groups={groupByCategory(general, cats)} />
+            )}
+          </section>
+        </>
+      )}
+    </div>
   )
 }

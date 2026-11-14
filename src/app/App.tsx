@@ -3,6 +3,7 @@ import { ForgotPasswordPage } from '../features/auth/pages/ForgotPasswordPage'
 import { LoginPage } from '../features/auth/pages/LoginPage'
 import { PendingPage } from '../features/auth/pages/PendingPage'
 import { ResetPasswordPage } from '../features/auth/pages/ResetPasswordPage'
+import { CoursePage } from '../features/catalog/CoursePage'
 import { HomePage } from '../features/home/HomePage'
 import { ProfilePage } from '../features/profile/ProfilePage'
 import { AppLayout } from './AppLayout'
@@ -21,6 +22,7 @@ export function App() {
         <Route element={<RequireActive />}>
           <Route element={<AppLayout />}>
             <Route index element={<HomePage />} />
+            <Route path="cursos/:slug" element={<CoursePage />} />
             <Route path="perfil" element={<ProfilePage />} />
           </Route>
         </Route>
