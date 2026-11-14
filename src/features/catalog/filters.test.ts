@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  filterLinks, generalLinks, groupByCategory, linksForCourse, mecFor, normalize,
+  filterLinks, generalLinks, groupByCategory, linksForCourse, liveClassesByDay, mecFor, normalize, todayWeekday,
   type CatalogLink, type Category,
 } from './filters'
 
@@ -55,5 +55,25 @@ describe('groupByCategory', () => {
       cats,
     )
     expect(groups.map((g) => g.category?.name ?? null)).toEqual(['A', 'B', null])
+  })
+})
+
+describe('aulas ao vivo', () => {
+  it('agrupa por dia da semana, de segunda a domingo, só dias com link', () => {
+    const groups = liveClassesByDay([
+      link({ id: 'q', weekday: 4 }), link({ id: 's', weekday: 1 }), link({ id: 's2', weekday: 1 }), link({ id: 'x' }),
+    ])
+    expect(groups.map((g) => [g.weekday, g.links.length])).toEqual([[1, 2], [4, 1]])
+  })
+
+  it('link com dia da semana não aparece em links gerais', () => {
+    expect(generalLinks([link({ id: 'a', weekday: 2 }), link({ id: 'b' })]).map((l) => l.id)).toEqual(['b'])
+  })
+
+  it('descobre o dia de hoje no horário de Brasília', () => {
+    // Brasília é UTC-3: 15/11/2026 04:30 UTC = domingo 01:30; 16/11 02:00 UTC ainda é domingo; 16/11 04:00 UTC já é segunda.
+    expect(todayWeekday(new Date('2026-11-15T04:30:00Z'))).toBe(7)
+    expect(todayWeekday(new Date('2026-11-16T02:00:00Z'))).toBe(7)
+    expect(todayWeekday(new Date('2026-11-16T04:00:00Z'))).toBe(1)
   })
 })

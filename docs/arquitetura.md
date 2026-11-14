@@ -1,6 +1,6 @@
 # Arquitetura — Central de Links CS
 
-Atualizado na etapa 7 (14/11/2026). Atualize este arquivo sempre que uma decisão mudar.
+Atualizado na etapa 8 (14/11/2026). Atualize este arquivo sempre que uma decisão mudar.
 
 ## Visão geral
 
@@ -14,6 +14,9 @@ Site React + TypeScript + Tailwind publicado no Cloudflare Pages (https://centra
 - A Central **começa vazia**. Nenhum link é cadastrado sem autorização.
 - Nada é apagado: itens são **desativados** (`active = false`) e podem ser reativados.
 - Novos usuários: criados manualmente no painel do Supabase. A Edge Function `admin-users` só será feita se for pedida.
+- **Escopo ampliado (14/11/2026):** a Central reúne os links de toda a empresa InstitutoNTA, não só das pós-graduações. Entram aulas ao vivo (inglês para profissionais de Dados e IA e de TI, Aceleração EmpregaDados, Estágio, Projeto EmpregaDados), planilhas de uso diário, OneDrive e CRM. Esses links são **gerais** (sem curso), organizados por categoria.
+- Categorias iniciais: Aulas ao vivo, Planilhas, Arquivos (OneDrive) e CRM. Edite em Administração > Categorias.
+- **Aulas ao vivo:** o link tem um campo opcional "dia da semana" (1 = segunda ... 7 = domingo). A tela inicial mostra a área "Aulas ao vivo", agrupada por dia, com o dia de hoje (horário de Brasília) em destaque. Link com dia da semana não repete em "Links gerais".
 - Logo e domínio próprio: na etapa 8.
 
 ## Cursos e identidade visual
@@ -59,7 +62,7 @@ Regras de negócio que não dependem de tela ficam em arquivos puros, com testes
 | `profiles` | nome, e-mail, perfil (admin, gestor, colaborador), ativo |
 | `courses` | nome, slug, cor, ordem, ativo |
 | `categories` | nome, slug, ícone, ordem, ativo |
-| `links` | título, url, descrição, categoria, tipo (padrão ou MEC), ativo, ordem |
+| `links` | título, url, descrição, categoria, tipo (padrão ou MEC), dia da semana (opcional), ativo, ordem |
 | `link_courses` | liga um link a vários cursos |
 | `favorites` | usuário + link |
 | `link_clicks` | link, usuário, data e hora |
@@ -111,7 +114,7 @@ A regra é aplicada no banco (RLS em todas as tabelas). Esconder botões na tela
 
 ## Migrações
 
-`supabase/migrations/`, em ordem: estrutura (1), regras de acesso (2), cursos (3), correção da validação do MEC (4), índice (5), cor do Defesa Cibernética (6), salvar link e proteção do último admin (7), métricas de uso (8).
+`supabase/migrations/`, em ordem: estrutura (1), regras de acesso (2), cursos (3), correção da validação do MEC (4), índice (5), cor do Defesa Cibernética (6), salvar link e proteção do último admin (7), métricas de uso (8), dia da semana das aulas ao vivo (9).
 
 ## Etapas
 

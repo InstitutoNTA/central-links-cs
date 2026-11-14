@@ -3,6 +3,18 @@ import { friendlyDbError, slugify, validateLink, type LinkInput } from './valida
 
 const ok: LinkInput = { title: 'Matrículas', url: 'https://exemplo.test/x', description: '', kind: 'standard', courseIds: [] }
 
+describe('validateLink dia da semana', () => {
+  const base = { title: 'Aula', url: 'https://exemplo.test', description: '', kind: 'standard' as const, courseIds: [] }
+  it('aceita 1 a 7 e vazio', () => {
+    expect(validateLink({ ...base, weekday: 3 })).toEqual([])
+    expect(validateLink({ ...base, weekday: null })).toEqual([])
+  })
+  it('recusa dia fora da faixa e dia no MEC', () => {
+    expect(validateLink({ ...base, weekday: 8 })).toContain('Dia da semana inválido.')
+    expect(validateLink({ ...base, kind: 'mec', courseIds: ['c'], weekday: 2 })).toContain('O link do MEC não tem dia da semana.')
+  })
+})
+
 describe('validateLink', () => {
   it('aceita link válido', () => expect(validateLink(ok)).toEqual([]))
   it('exige nome', () => expect(validateLink({ ...ok, title: '   ' })).toHaveLength(1))

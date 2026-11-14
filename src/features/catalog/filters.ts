@@ -37,7 +37,39 @@ export function linksForCourse(links: CatalogLink[], courseId: string): CatalogL
 
 /** Links sem curso vinculado = links gerais da equipe. */
 export function generalLinks(links: CatalogLink[]): CatalogLink[] {
-  return links.filter((l) => l.kind !== 'mec' && l.link_courses.length === 0)
+  return links.filter((l) => l.kind !== 'mec' && l.link_courses.length === 0 && l.weekday == null)
+}
+
+/** 1 = segunda ... 7 = domingo (padrão ISO, o mesmo gravado no banco). */
+export const WEEKDAY_LABELS: Record<number, string> = {
+  1: 'Segunda-feira',
+  2: 'Terça-feira',
+  3: 'Quarta-feira',
+  4: 'Quinta-feira',
+  5: 'Sexta-feira',
+  6: 'Sábado',
+  7: 'Domingo',
+}
+
+/** Dia da semana de hoje no horário de Brasília (1 = segunda ... 7 = domingo). */
+export function todayWeekday(now: Date = new Date()): number {
+  const name = new Intl.DateTimeFormat('en-US', { weekday: 'short', timeZone: 'America/Sao_Paulo' }).format(now)
+  return { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7 }[name] ?? 1
+}
+
+export interface WeekdayGroup {
+  weekday: number
+  links: CatalogLink[]
+}
+
+/** Aulas ao vivo: links que têm dia da semana, agrupados de segunda a domingo (só dias com link). */
+export function liveClassesByDay(links: CatalogLink[]): WeekdayGroup[] {
+  const groups: WeekdayGroup[] = []
+  for (let weekday = 1; weekday <= 7; weekday++) {
+    const inDay = links.filter((l) => l.kind !== 'mec' && l.weekday === weekday)
+    if (inDay.length > 0) groups.push({ weekday, links: inDay })
+  }
+  return groups
 }
 
 export interface LinkGroup {

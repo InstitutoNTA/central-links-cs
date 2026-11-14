@@ -227,6 +227,7 @@ export type Database = {
           title: string
           updated_at: string
           url: string
+          weekday: number | null
         }
         Insert: {
           active?: boolean
@@ -240,6 +241,7 @@ export type Database = {
           title: string
           updated_at?: string
           url: string
+          weekday?: number | null
         }
         Update: {
           active?: boolean
@@ -253,6 +255,7 @@ export type Database = {
           title?: string
           updated_at?: string
           url?: string
+          weekday?: number | null
         }
         Relationships: [
           {
@@ -336,6 +339,7 @@ export type Database = {
           p_kind: Database["public"]["Enums"]["link_kind"]
           p_title: string
           p_url: string
+          p_weekday?: number | null
         }
         Returns: string
       }

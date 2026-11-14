@@ -1,5 +1,6 @@
 /** Transforma uma linha crua do histórico em texto legível. */
 import { ROLE_LABELS, type Role } from '../../lib/roles'
+import { WEEKDAY_LABELS } from '../catalog/filters'
 
 export interface AuditEntry {
   id: number
@@ -27,6 +28,7 @@ const FIELD_LABELS: Record<string, string> = {
   category_id: 'Categoria',
   kind: 'Tipo',
   active: 'Ativo',
+  weekday: 'Dia da aula',
   sort_order: 'Ordem',
   color: 'Cor',
   slug: 'Identificador',
@@ -55,6 +57,7 @@ function formatValue(field: string, value: unknown): string {
   if (value === null || value === undefined || value === '') return '—'
   if (typeof value === 'boolean') return value ? 'Sim' : 'Não'
   if (field === 'role') return ROLE_LABELS[value as Role] ?? String(value)
+  if (field === 'weekday') return WEEKDAY_LABELS[Number(value)] ?? String(value)
   if (field === 'kind') return value === 'mec' ? 'MEC' : 'Comum'
   if (field.endsWith('_id')) return 'definida' // ids não dizem nada para a pessoa
   return String(value)

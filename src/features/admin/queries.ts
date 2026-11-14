@@ -70,6 +70,7 @@ export interface SaveLinkVars {
   kind: Enums<'link_kind'>
   active: boolean
   courseIds: string[]
+  weekday: number | null
 }
 
 export function useSaveLink() {
@@ -83,6 +84,7 @@ export function useSaveLink() {
       p_kind: v.kind,
       p_active: v.active,
       p_course_ids: v.courseIds,
+      p_weekday: v.weekday,
     })
     if (error) throw error
   })

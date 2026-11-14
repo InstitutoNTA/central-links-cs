@@ -3,7 +3,7 @@ import { FormMessage } from '../../components/ui/AuthCard'
 import { Button } from '../../components/ui/Button'
 import { Field } from '../../components/ui/Field'
 import { Select } from '../../components/ui/Select'
-import { filterLinks, type CatalogLink } from '../catalog/filters'
+import { filterLinks, WEEKDAY_LABELS, type CatalogLink } from '../catalog/filters'
 import { Badge, Panel } from './AdminLayout'
 import { useAdminCategories, useAdminCourses, useAdminLinks, useSaveLink, useSetLinkActive } from './queries'
 import { friendlyDbError, validateLink } from './validation'
@@ -18,6 +18,7 @@ function LinkForm({ initial, onDone }: { initial: CatalogLink | null; onDone: ()
   const [categoryId, setCategoryId] = useState(initial?.category_id ?? '')
   const [isMec, setIsMec] = useState(initial?.kind === 'mec')
   const [courseIds, setCourseIds] = useState<string[]>(initial?.link_courses.map((c) => c.course_id) ?? [])
+  const [weekday, setWeekday] = useState(initial?.weekday ? String(initial.weekday) : '')
   const [active, setActive] = useState(initial?.active ?? true)
   const [problems, setProblems] = useState<string[]>([])
 
@@ -29,11 +30,11 @@ function LinkForm({ initial, onDone }: { initial: CatalogLink | null; onDone: ()
   function onSubmit(e: FormEvent) {
     e.preventDefault()
     const kind = isMec ? 'mec' : 'standard'
-    const found = validateLink({ title, url, description, kind, courseIds })
+    const found = validateLink({ title, url, description, kind, courseIds, weekday: weekday ? Number(weekday) : null })
     setProblems(found)
     if (found.length > 0) return
     save.mutate(
-      { id: initial?.id ?? null, title, url, description, categoryId: categoryId || null, kind, active, courseIds },
+      { id: initial?.id ?? null, title, url, description, categoryId: categoryId || null, kind, active, courseIds, weekday: isMec || !weekday ? null : Number(weekday) },
       { onSuccess: onDone },
     )
   }
@@ -49,6 +50,15 @@ function LinkForm({ initial, onDone }: { initial: CatalogLink | null; onDone: ()
           <option key={c.id} value={c.id}>{c.name}</option>
         ))}
       </Select>
+
+      {!isMec && (
+        <Select label="Dia da aula ao vivo (opcional)" value={weekday} onChange={(e) => setWeekday(e.target.value)}>
+          <option value="">Não é aula com dia fixo</option>
+          {Object.entries(WEEKDAY_LABELS).map(([n, label]) => (
+            <option key={n} value={n}>{label}</option>
+          ))}
+        </Select>
+      )}
 
       <label className="flex items-center gap-2 text-sm text-slate-200">
         <input
@@ -151,7 +161,8 @@ export function LinksAdminPage() {
                   {l.kind === 'mec' && <Badge tone="azul">MEC</Badge>}
                   {!l.active && <Badge tone="vermelho">Desativado</Badge>}
                   {catName(l.category_id) && <Badge>{catName(l.category_id)}</Badge>}
-                  {l.link_courses.length === 0 && l.kind !== 'mec' && <Badge>Geral</Badge>}
+                  {l.weekday && <Badge tone="azul">{WEEKDAY_LABELS[l.weekday]}</Badge>}
+                  {l.link_courses.length === 0 && l.kind !== 'mec' && !l.weekday && <Badge>Geral</Badge>}
                   {l.link_courses.map((lc) => <Badge key={lc.course_id}>{courseName(lc.course_id)}</Badge>)}
                 </div>
               </div>

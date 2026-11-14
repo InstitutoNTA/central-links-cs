@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../auth/useAuth'
-import { CategoryChips, CourseCard, EmptyNote, GroupedLinks, LinkItem, SearchBox } from '../catalog/components'
-import { filterLinks, generalLinks, groupByCategory, linksForCourse, mecFor } from '../catalog/filters'
+import { CategoryChips, CourseCard, EmptyNote, GroupedLinks, LinkItem, LiveClasses, SearchBox } from '../catalog/components'
+import { filterLinks, generalLinks, groupByCategory, linksForCourse, liveClassesByDay, mecFor, todayWeekday } from '../catalog/filters'
 import { useFavoriteIds } from '../catalog/favorites'
 import { useCategories, useCourses, useLinks } from '../catalog/queries'
 
@@ -20,6 +20,7 @@ export function HomePage() {
   const searching = query.trim() !== '' || categoryId !== null
   const results = useMemo(() => filterLinks(allLinks, { query, categoryId }), [allLinks, query, categoryId])
   const general = useMemo(() => filterLinks(generalLinks(allLinks), { categoryId }), [allLinks, categoryId])
+  const liveClasses = useMemo(() => liveClassesByDay(allLinks), [allLinks])
   const favoriteLinks = useMemo(() => allLinks.filter((l) => favoriteIds.data?.includes(l.id)), [allLinks, favoriteIds.data])
   const catName = (id: string | null) => cats.find((c) => c.id === id)?.name
 
@@ -66,6 +67,13 @@ export function HomePage() {
                   <LinkItem key={l.id} link={l} categoryName={catName(l.category_id)} />
                 ))}
               </ul>
+            </section>
+          )}
+
+          {liveClasses.length > 0 && (
+            <section>
+              <h2 className="mb-3 text-lg font-medium text-slate-100">Aulas ao vivo</h2>
+              <LiveClasses groups={liveClasses} today={todayWeekday()} />
             </section>
           )}
 

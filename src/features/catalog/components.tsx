@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useFavoriteIds, useToggleFavorite, useTrackClick } from './favorites'
-import type { CatalogLink, Category, LinkGroup } from './filters'
+import { WEEKDAY_LABELS, type CatalogLink, type Category, type LinkGroup, type WeekdayGroup } from './filters'
 
 /** Link externo: abre em nova aba, sem repassar a origem da Central, e registra o clique. */
 export function ExternalLink({ link, className = '', children }: { link: CatalogLink; className?: string; children: React.ReactNode }) {
@@ -72,6 +72,34 @@ export function GroupedLinks({ groups }: { groups: LinkGroup[] }) {
           </ul>
         </section>
       ))}
+    </div>
+  )
+}
+
+/** Aulas ao vivo por dia da semana; o dia de hoje (Brasília) vem destacado. */
+export function LiveClasses({ groups, today }: { groups: WeekdayGroup[]; today: number }) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {groups.map((g) => {
+        const isToday = g.weekday === today
+        return (
+          <section
+            key={g.weekday}
+            aria-label={WEEKDAY_LABELS[g.weekday]}
+            className={`rounded-xl border p-3 ${isToday ? 'border-azul bg-azul/5' : 'border-grafite-700'}`}
+          >
+            <h3 className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-100">
+              {WEEKDAY_LABELS[g.weekday]}
+              {isToday && <span className="rounded-full bg-azul/20 px-2 py-0.5 text-xs text-azul">Hoje</span>}
+            </h3>
+            <ul className="space-y-2">
+              {g.links.map((l) => (
+                <LinkItem key={l.id} link={l} />
+              ))}
+            </ul>
+          </section>
+        )
+      })}
     </div>
   )
 }
