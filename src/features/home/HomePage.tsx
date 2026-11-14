@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useAuth } from '../auth/useAuth'
 import { CategoryChips, CourseCard, EmptyNote, GroupedLinks, LinkItem, SearchBox } from '../catalog/components'
 import { filterLinks, generalLinks, groupByCategory, linksForCourse, mecFor } from '../catalog/filters'
+import { useFavoriteIds } from '../catalog/favorites'
 import { useCategories, useCourses, useLinks } from '../catalog/queries'
 
 export function HomePage() {
@@ -10,6 +11,7 @@ export function HomePage() {
   const courses = useCourses()
   const categories = useCategories()
   const links = useLinks()
+  const favoriteIds = useFavoriteIds()
   const [query, setQuery] = useState('')
   const [categoryId, setCategoryId] = useState<string | null>(null)
 
@@ -18,6 +20,7 @@ export function HomePage() {
   const searching = query.trim() !== '' || categoryId !== null
   const results = useMemo(() => filterLinks(allLinks, { query, categoryId }), [allLinks, query, categoryId])
   const general = useMemo(() => filterLinks(generalLinks(allLinks), { categoryId }), [allLinks, categoryId])
+  const favoriteLinks = useMemo(() => allLinks.filter((l) => favoriteIds.data?.includes(l.id)), [allLinks, favoriteIds.data])
   const catName = (id: string | null) => cats.find((c) => c.id === id)?.name
 
   const failed = courses.isError || categories.isError || links.isError
@@ -55,6 +58,17 @@ export function HomePage() {
 
       {!loading && !failed && !searching && (
         <>
+          {favoriteLinks.length > 0 && (
+            <section>
+              <h2 className="mb-3 text-lg font-medium text-slate-100">Meus favoritos</h2>
+              <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {favoriteLinks.map((l) => (
+                  <LinkItem key={l.id} link={l} categoryName={catName(l.category_id)} />
+                ))}
+              </ul>
+            </section>
+          )}
+
           <section>
             <h2 className="mb-3 text-lg font-medium text-slate-100">Cursos</h2>
             {(courses.data ?? []).length === 0 ? (
