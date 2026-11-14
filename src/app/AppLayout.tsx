@@ -21,6 +21,11 @@ export function AppLayout() {
             <NavLink to="/" end className={linkClass}>
               Início
             </NavLink>
+            {profile?.role === 'admin' && (
+              <NavLink to="/admin" className={linkClass}>
+                Administração
+              </NavLink>
+            )}
             <NavLink to="/perfil" className={linkClass}>
               Meu perfil
             </NavLink>

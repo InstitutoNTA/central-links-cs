@@ -306,7 +306,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_save_link: {
+        Args: {
+          p_active: boolean
+          p_category_id: string | null
+          p_course_ids: string[]
+          p_description: string | null
+          p_id: string | null
+          p_kind: Database["public"]["Enums"]["link_kind"]
+          p_title: string
+          p_url: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "gestor" | "colaborador"
