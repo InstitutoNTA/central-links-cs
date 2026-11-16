@@ -346,7 +346,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "gestor" | "colaborador"
-      link_kind: "standard" | "mec"
+      link_kind: "standard" | "mec" | "platform"
     }
     CompositeTypes: {
       [_ in never]: never

@@ -4,7 +4,7 @@ export interface LinkInput {
   title: string
   url: string
   description: string
-  kind: 'standard' | 'mec'
+  kind: 'standard' | 'mec' | 'platform'
   courseIds: string[]
   weekday?: number | null
 }
@@ -22,10 +22,14 @@ export function validateLink(input: LinkInput): string[] {
   if (input.kind === 'mec' && input.courseIds.length !== 1) {
     errors.push('O link do MEC precisa estar ligado a exatamente um curso.')
   }
+  if (input.kind === 'platform' && input.courseIds.length === 0) {
+    errors.push('O link da plataforma precisa estar ligado a pelo menos um curso.')
+  }
   if (input.weekday != null && (!Number.isInteger(input.weekday) || input.weekday < 1 || input.weekday > 7)) {
     errors.push('Dia da semana inválido.')
   }
   if (input.kind === 'mec' && input.weekday != null) errors.push('O link do MEC não tem dia da semana.')
+  if (input.kind === 'platform' && input.weekday != null) errors.push('O link da plataforma não tem dia da semana.')
   return errors
 }
 

@@ -30,14 +30,19 @@ export function mecFor(links: CatalogLink[], courseId: string): CatalogLink | un
   return links.find((l) => l.kind === 'mec' && l.link_courses.some((lc) => lc.course_id === courseId))
 }
 
-/** Links comuns de um curso (o MEC aparece sob o nome do curso, não na lista). */
+/** Link da plataforma dos alunos (o mesmo link pode valer para vários cursos). */
+export function platformFor(links: CatalogLink[], courseId: string): CatalogLink | undefined {
+  return links.find((l) => l.kind === 'platform' && l.link_courses.some((lc) => lc.course_id === courseId))
+}
+
+/** Links comuns de um curso (MEC e Plataforma aparecem sob o nome do curso, não na lista). */
 export function linksForCourse(links: CatalogLink[], courseId: string): CatalogLink[] {
-  return links.filter((l) => l.kind !== 'mec' && l.link_courses.some((lc) => lc.course_id === courseId))
+  return links.filter((l) => l.kind === 'standard' && l.link_courses.some((lc) => lc.course_id === courseId))
 }
 
 /** Links sem curso vinculado = links gerais da equipe. */
 export function generalLinks(links: CatalogLink[]): CatalogLink[] {
-  return links.filter((l) => l.kind !== 'mec' && l.link_courses.length === 0 && l.weekday == null)
+  return links.filter((l) => l.kind === 'standard' && l.link_courses.length === 0 && l.weekday == null)
 }
 
 /** 1 = segunda ... 7 = domingo (padrão ISO, o mesmo gravado no banco). */
@@ -66,7 +71,7 @@ export interface WeekdayGroup {
 export function liveClassesByDay(links: CatalogLink[]): WeekdayGroup[] {
   const groups: WeekdayGroup[] = []
   for (let weekday = 1; weekday <= 7; weekday++) {
-    const inDay = links.filter((l) => l.kind !== 'mec' && l.weekday === weekday)
+    const inDay = links.filter((l) => l.kind === 'standard' && l.weekday === weekday)
     if (inDay.length > 0) groups.push({ weekday, links: inDay })
   }
   return groups

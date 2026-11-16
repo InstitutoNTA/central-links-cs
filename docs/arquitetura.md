@@ -31,7 +31,7 @@ Fundo grafite, detalhes em azul e vermelho suaves. Cada curso tem sua cor, edit�
 | MBA em Inteligência Artificial Aplicada ao Direito | amarelo |
 | Defesa Cibernética com IA Generativa Aplicada | rosa suave |
 
-O acesso ao **MEC** aparece como link clicável abaixo do nome de cada curso (no início e na página do curso). Não existe seção separada para o MEC. Sem MEC cadastrado, a tela mostra "MEC: ainda não cadastrado".
+Abaixo do nome de cada curso (no início e na página do curso) aparecem duas linhas de acesso, cada uma com os botões **Abrir** e **Copiar link**: **Plataforma** (link de login da plataforma dos alunos, o mesmo para vários cursos) e **MEC**. Não existe seção separada para eles. Sem link cadastrado, a tela mostra "ainda não cadastrada/cadastrado". Todo link da Central (cartões, MEC, Plataforma e painel admin) tem Abrir e Copiar link; só o Abrir das telas normais registra clique.
 
 ## Código
 
@@ -62,7 +62,7 @@ Regras de negócio que não dependem de tela ficam em arquivos puros, com testes
 | `profiles` | nome, e-mail, perfil (admin, gestor, colaborador), ativo |
 | `courses` | nome, slug, cor, ordem, ativo |
 | `categories` | nome, slug, ícone, ordem, ativo |
-| `links` | título, url, descrição, categoria, tipo (padrão ou MEC), dia da semana (opcional), ativo, ordem |
+| `links` | título, url, descrição, categoria, tipo (padrão, MEC ou plataforma), dia da semana (opcional), ativo, ordem |
 | `link_courses` | liga um link a vários cursos |
 | `favorites` | usuário + link |
 | `link_clicks` | link, usuário, data e hora |
@@ -100,6 +100,7 @@ A regra é aplicada no banco (RLS em todas as tabelas). Esconder botões na tela
 - **Cliques e favoritos:** cada pessoa só grava os próprios; a data do clique é a do servidor.
 - **Links:** só `https://` (bloqueia `http:` e `javascript:`), validado na tela e no banco. Abrem em nova aba com `noopener noreferrer`.
 - **MEC:** pertence a um único curso; cada curso tem no máximo um MEC ativo.
+- **Plataforma:** tipo `platform`; um único link pode valer para vários cursos (`link_courses`). Não aparece nas listas de links comuns nem em "Links gerais".
 - **Último administrador:** o banco recusa rebaixar ou desativar o último admin ativo.
 - **Histórico:** `audit_log` registra inclusões, alterações e exclusões, com autor, antes e depois.
 - **Navegador:** cabeçalhos de segurança no Cloudflare Pages (arquivo `public/_headers`) (política de conteúdo restrita ao próprio site e ao Supabase, bloqueio de iframe, sem indexação em buscadores). Só a chave **pública** do Supabase vai ao navegador.
@@ -114,7 +115,7 @@ A regra é aplicada no banco (RLS em todas as tabelas). Esconder botões na tela
 
 ## Migrações
 
-`supabase/migrations/`, em ordem: estrutura (1), regras de acesso (2), cursos (3), correção da validação do MEC (4), índice (5), cor do Defesa Cibernética (6), salvar link e proteção do último admin (7), métricas de uso (8), dia da semana das aulas ao vivo (9).
+`supabase/migrations/`, em ordem: estrutura (1), regras de acesso (2), cursos (3), correção da validação do MEC (4), índice (5), cor do Defesa Cibernética (6), salvar link e proteção do último admin (7), métricas de uso (8), dia da semana das aulas ao vivo (9), tipo de link "plataforma" (10).
 
 ## Etapas
 

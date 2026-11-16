@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { CategoryChips, EmptyNote, GroupedLinks, MecLink, SearchBox } from './components'
-import { filterLinks, groupByCategory, linksForCourse, mecFor } from './filters'
+import { CategoryChips, EmptyNote, CourseAccess, GroupedLinks, SearchBox } from './components'
+import { filterLinks, groupByCategory, linksForCourse, mecFor, platformFor } from './filters'
 import { useCategories, useCourses, useLinks } from './queries'
 
 export function CoursePage() {
@@ -35,8 +35,8 @@ export function CoursePage() {
       <Link to="/" className="text-sm text-azul hover:underline">← Início</Link>
       <header className="rounded-xl border border-grafite-700 bg-grafite-900 p-5" style={{ borderLeft: `4px solid ${course.color}` }}>
         <h1 className="text-2xl font-semibold text-slate-100">{course.name}</h1>
-        <div className="mt-1.5">
-          <MecLink mec={mecFor(allLinks, course.id)} />
+        <div className="mt-2">
+          <CourseAccess courseName={course.name} platform={platformFor(allLinks, course.id)} mec={mecFor(allLinks, course.id)} />
         </div>
       </header>
       <div className="space-y-3">

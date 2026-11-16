@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
 import type { CatalogLink } from './filters'
-import { LinkItem } from './components'
+import { CourseAccess, LinkItem } from './components'
 
 const calls: { table: string; op: string; payload?: unknown }[] = []
 let favoriteRows: { link_id: string }[] = []
@@ -83,5 +83,29 @@ describe('LinkItem', () => {
     setup()
     fireEvent.click(await screen.findByRole('button', { name: /Favoritar/ }))
     expect(calls.some((c) => c.table === 'link_clicks')).toBe(false)
+  })
+})
+
+describe('CourseAccess', () => {
+  const plat = { ...link, id: 'p1', title: 'Plataforma', url: 'https://plataforma.test/login', kind: 'platform' } as unknown as CatalogLink
+  function setupAccess(platform: CatalogLink | undefined) {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    return render(
+      <QueryClientProvider client={client}>
+        <MemoryRouter>
+          <CourseAccess courseName="Curso X" platform={platform} mec={undefined} />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+  }
+  it('mostra Abrir e Copiar para a plataforma e aviso para o MEC não cadastrado', () => {
+    setupAccess(plat)
+    expect(screen.getByRole('link', { name: /Abrir Plataforma de Curso X/ }).getAttribute('href')).toBe('https://plataforma.test/login')
+    expect(screen.getByRole('button', { name: /Copiar link de Plataforma de Curso X/ })).toBeTruthy()
+    expect(screen.getByText('ainda não cadastrado')).toBeTruthy()
+  })
+  it('avisa quando a plataforma ainda não foi cadastrada', () => {
+    setupAccess(undefined)
+    expect(screen.getByText('ainda não cadastrada')).toBeTruthy()
   })
 })

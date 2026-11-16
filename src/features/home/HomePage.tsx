@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../auth/useAuth'
 import { CategoryChips, CourseCard, EmptyNote, GroupedLinks, LinkItem, LiveClasses, SearchBox } from '../catalog/components'
-import { filterLinks, generalLinks, groupByCategory, linksForCourse, liveClassesByDay, mecFor, todayWeekday } from '../catalog/filters'
+import { filterLinks, generalLinks, groupByCategory, linksForCourse, liveClassesByDay, mecFor, platformFor, todayWeekday } from '../catalog/filters'
 import { useFavoriteIds } from '../catalog/favorites'
 import { useCategories, useCourses, useLinks } from '../catalog/queries'
 
@@ -84,7 +84,7 @@ export function HomePage() {
             ) : (
               <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {courses.data!.map((c) => (
-                  <CourseCard key={c.id} course={c} mec={mecFor(allLinks, c.id)} count={linksForCourse(allLinks, c.id).length} />
+                  <CourseCard key={c.id} course={c} platform={platformFor(allLinks, c.id)} mec={mecFor(allLinks, c.id)} count={linksForCourse(allLinks, c.id).length} />
                 ))}
               </ul>
             )}

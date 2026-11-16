@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  filterLinks, generalLinks, groupByCategory, linksForCourse, liveClassesByDay, mecFor, normalize, todayWeekday,
+  filterLinks, generalLinks, groupByCategory, linksForCourse, liveClassesByDay, mecFor, normalize, platformFor, todayWeekday,
   type CatalogLink, type Category,
 } from './filters'
 
@@ -38,6 +38,14 @@ describe('cursos e MEC', () => {
   it('acha o MEC do curso', () => expect(mecFor(all, 'c1')?.id).toBe('m'))
   it('não acha MEC de outro curso', () => expect(mecFor(all, 'c2')).toBeUndefined())
   it('MEC não entra na lista do curso', () => expect(linksForCourse(all, 'c1').map((l) => l.id)).toEqual(['n']))
+  it('plataforma vale para vários cursos e não entra nas listas', () => {
+    const plat = link({ id: 'p', kind: 'platform', link_courses: [{ course_id: 'c1' }, { course_id: 'c2' }] })
+    expect(platformFor([plat], 'c1')?.id).toBe('p')
+    expect(platformFor([plat], 'c2')?.id).toBe('p')
+    expect(platformFor([plat], 'c3')).toBeUndefined()
+    expect(linksForCourse([plat], 'c1')).toEqual([])
+    expect(generalLinks([plat])).toEqual([])
+  })
   it('link sem curso é geral', () => expect(generalLinks(all).map((l) => l.id)).toEqual(['g']))
   it('link de dois cursos aparece nos dois', () => {
     const dois = link({ id: 'd', link_courses: [{ course_id: 'c1' }, { course_id: 'c2' }] })

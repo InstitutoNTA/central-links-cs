@@ -25,6 +25,8 @@ describe('validateLink', () => {
     expect(validateLink({ ...ok, kind: 'mec', courseIds: [] }).length).toBe(1)
     expect(validateLink({ ...ok, kind: 'mec', courseIds: ['a', 'b'] }).length).toBe(1)
     expect(validateLink({ ...ok, kind: 'mec', courseIds: ['a'] })).toEqual([])
+    expect(validateLink({ ...ok, kind: 'platform', courseIds: [] }).length).toBe(1)
+    expect(validateLink({ ...ok, kind: 'platform', courseIds: ['a', 'b'] })).toEqual([])
   })
   it('limita a descrição a 500 caracteres', () => {
     expect(validateLink({ ...ok, description: 'x'.repeat(501) }).length).toBe(1)

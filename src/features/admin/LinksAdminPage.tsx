@@ -17,7 +17,8 @@ function LinkForm({ initial, onDone }: { initial: CatalogLink | null; onDone: ()
   const [url, setUrl] = useState(initial?.url ?? '')
   const [description, setDescription] = useState(initial?.description ?? '')
   const [categoryId, setCategoryId] = useState(initial?.category_id ?? '')
-  const [isMec, setIsMec] = useState(initial?.kind === 'mec')
+  const [kind, setKind] = useState<'standard' | 'mec' | 'platform'>(initial?.kind ?? 'standard')
+  const isMec = kind === 'mec'
   const [courseIds, setCourseIds] = useState<string[]>(initial?.link_courses.map((c) => c.course_id) ?? [])
   const [weekday, setWeekday] = useState(initial?.weekday ? String(initial.weekday) : '')
   const [active, setActive] = useState(initial?.active ?? true)
@@ -30,12 +31,11 @@ function LinkForm({ initial, onDone }: { initial: CatalogLink | null; onDone: ()
 
   function onSubmit(e: FormEvent) {
     e.preventDefault()
-    const kind = isMec ? 'mec' : 'standard'
     const found = validateLink({ title, url, description, kind, courseIds, weekday: weekday ? Number(weekday) : null })
     setProblems(found)
     if (found.length > 0) return
     save.mutate(
-      { id: initial?.id ?? null, title, url, description, categoryId: categoryId || null, kind, active, courseIds, weekday: isMec || !weekday ? null : Number(weekday) },
+      { id: initial?.id ?? null, title, url, description, categoryId: categoryId || null, kind, active, courseIds, weekday: kind !== 'standard' || !weekday ? null : Number(weekday) },
       { onSuccess: onDone },
     )
   }
@@ -52,7 +52,7 @@ function LinkForm({ initial, onDone }: { initial: CatalogLink | null; onDone: ()
         ))}
       </Select>
 
-      {!isMec && (
+      {kind === 'standard' && (
         <Select label="Dia da aula ao vivo (opcional)" value={weekday} onChange={(e) => setWeekday(e.target.value)}>
           <option value="">Não é aula com dia fixo</option>
           {Object.entries(WEEKDAY_LABELS).map(([n, label]) => (
@@ -61,21 +61,23 @@ function LinkForm({ initial, onDone }: { initial: CatalogLink | null; onDone: ()
         </Select>
       )}
 
-      <label className="flex items-center gap-2 text-sm text-slate-200">
-        <input
-          type="checkbox"
-          checked={isMec}
-          onChange={(e) => {
-            setIsMec(e.target.checked)
-            if (e.target.checked) setCourseIds((prev) => prev.slice(0, 1))
-          }}
-        />
-        Este é o link do MEC de um curso
-      </label>
+      <Select
+        label="Tipo do link"
+        value={kind}
+        onChange={(e) => {
+          const next = e.target.value as 'standard' | 'mec' | 'platform'
+          setKind(next)
+          if (next === 'mec') setCourseIds((prev) => prev.slice(0, 1))
+        }}
+      >
+        <option value="standard">Link comum</option>
+        <option value="platform">Plataforma dos alunos (pode valer para vários cursos)</option>
+        <option value="mec">MEC de um curso</option>
+      </Select>
 
       <fieldset className="space-y-2">
         <legend className="text-sm text-slate-300">
-          {isMec ? 'Curso do MEC (escolha um)' : 'Cursos (deixe em branco para link geral da equipe)'}
+          {isMec ? 'Curso do MEC (escolha um)' : kind === 'platform' ? 'Cursos que usam esta plataforma' : 'Cursos (deixe em branco para link geral da equipe)'}
         </legend>
         {courses.data?.map((c) => (
           <label key={c.id} className="flex items-center gap-2 text-sm text-slate-200">
@@ -160,10 +162,11 @@ export function LinksAdminPage() {
                 <p className="truncate text-xs text-slate-400">{l.url}</p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {l.kind === 'mec' && <Badge tone="azul">MEC</Badge>}
+                  {l.kind === 'platform' && <Badge tone="azul">Plataforma</Badge>}
                   {!l.active && <Badge tone="vermelho">Desativado</Badge>}
                   {catName(l.category_id) && <Badge>{catName(l.category_id)}</Badge>}
                   {l.weekday && <Badge tone="azul">{WEEKDAY_LABELS[l.weekday]}</Badge>}
-                  {l.link_courses.length === 0 && l.kind !== 'mec' && !l.weekday && <Badge>Geral</Badge>}
+                  {l.link_courses.length === 0 && l.kind === 'standard' && !l.weekday && <Badge>Geral</Badge>}
                   {l.link_courses.map((lc) => <Badge key={lc.course_id}>{courseName(lc.course_id)}</Badge>)}
                 </div>
               </div>

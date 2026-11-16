@@ -23,7 +23,7 @@ export function ExternalLink({ link, className = '', children }: { link: Catalog
 }
 
 /** Copia o endereço do link para a área de transferência e avisa "Copiado!" por 2 segundos. Não conta como clique. */
-export function CopyLinkButton({ link, className = '' }: { link: CatalogLink; className?: string }) {
+export function CopyLinkButton({ link, label, className = '' }: { link: CatalogLink; label?: string; className?: string }) {
   const [state, setState] = useState<'idle' | 'copied' | 'error'>('idle')
   const timer = useRef<number | undefined>(undefined)
   useEffect(() => () => window.clearTimeout(timer.current), [])
@@ -43,7 +43,7 @@ export function CopyLinkButton({ link, className = '' }: { link: CatalogLink; cl
     <button
       type="button"
       onClick={copy}
-      aria-label={`Copiar link de ${link.title}`}
+      aria-label={`Copiar link de ${label ?? link.title}`}
       className={`rounded-md border border-grafite-700 px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:bg-grafite-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-azul/60 ${className}`}
     >
       <span aria-live="polite">{state === 'copied' ? 'Copiado!' : state === 'error' ? 'Não foi possível copiar' : 'Copiar link'}</span>
@@ -51,16 +51,42 @@ export function CopyLinkButton({ link, className = '' }: { link: CatalogLink; cl
   )
 }
 
-/** "MEC" logo abaixo do nome do curso. Sem link cadastrado, mostra aviso (nada é inventado). */
-export function MecLink({ mec }: { mec: CatalogLink | undefined }) {
-  if (!mec) return <span className="text-xs text-slate-400">MEC: ainda não cadastrado</span>
+/** Botão "Abrir": abre em nova aba e registra o clique. */
+export function OpenLinkButton({ link, label, className = '' }: { link: CatalogLink; label?: string; className?: string }) {
   return (
-    <span className="inline-flex flex-wrap items-center gap-2">
-      <ExternalLink link={mec} className="text-xs font-medium text-azul hover:underline">
-        MEC ↗
-      </ExternalLink>
-      <CopyLinkButton link={mec} className="px-2 py-0.5" />
-    </span>
+    <ExternalLink
+      link={link}
+      className={`rounded-md bg-azul px-3 py-1.5 text-xs font-medium text-grafite-950 transition hover:bg-azul/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-azul/60 ${className}`}
+    >
+      <span className="sr-only">Abrir {label ?? link.title} em nova aba</span>
+      <span aria-hidden>Abrir ↗</span>
+    </ExternalLink>
+  )
+}
+
+function AccessRow({ name, courseName, link, emptyText }: { name: string; courseName: string; link: CatalogLink | undefined; emptyText: string }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="w-20 text-xs font-medium text-slate-300">{name}</span>
+      {link ? (
+        <>
+          <OpenLinkButton link={link} label={`${name} de ${courseName}`} className="!px-2 !py-0.5" />
+          <CopyLinkButton link={link} label={`${name} de ${courseName}`} className="!px-2 !py-0.5" />
+        </>
+      ) : (
+        <span className="text-xs text-slate-400">{emptyText}</span>
+      )}
+    </div>
+  )
+}
+
+/** Acessos do curso logo abaixo do nome: Plataforma e MEC. Sem link cadastrado, mostra aviso (nada é inventado). */
+export function CourseAccess({ courseName, platform, mec }: { courseName: string; platform: CatalogLink | undefined; mec: CatalogLink | undefined }) {
+  return (
+    <div className="space-y-1.5">
+      <AccessRow name="Plataforma" courseName={courseName} link={platform} emptyText="ainda não cadastrada" />
+      <AccessRow name="MEC" courseName={courseName} link={mec} emptyText="ainda não cadastrado" />
+    </div>
   )
 }
 
@@ -77,13 +103,7 @@ export function LinkItem({ link, categoryName }: { link: CatalogLink; categoryNa
         {categoryName && <span className="mt-2 inline-block rounded-full bg-grafite-700 px-2 py-0.5 text-xs text-slate-300">{categoryName}</span>}
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
-        <ExternalLink
-          link={link}
-          className="rounded-md bg-azul px-3 py-1.5 text-xs font-medium text-grafite-950 transition hover:bg-azul/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-azul/60"
-        >
-          <span className="sr-only">Abrir {link.title} em nova aba</span>
-          <span aria-hidden>Abrir ↗</span>
-        </ExternalLink>
+        <OpenLinkButton link={link} />
         <CopyLinkButton link={link} />
       </div>
       <button
@@ -175,14 +195,14 @@ export function SearchBox({ value, onChange }: { value: string; onChange: (v: st
   )
 }
 
-export function CourseCard({ course, mec, count }: { course: { slug: string; name: string; color: string }; mec: CatalogLink | undefined; count: number }) {
+export function CourseCard({ course, platform, mec, count }: { course: { slug: string; name: string; color: string }; platform: CatalogLink | undefined; mec: CatalogLink | undefined; count: number }) {
   return (
     <li className="rounded-xl border border-grafite-700 bg-grafite-900 p-4" style={{ borderLeft: `4px solid ${course.color}` }}>
       <Link to={`/cursos/${course.slug}`} className="font-medium text-slate-100 hover:underline">
         {course.name}
       </Link>
-      <div className="mt-1">
-        <MecLink mec={mec} />
+      <div className="mt-2">
+        <CourseAccess courseName={course.name} platform={platform} mec={mec} />
       </div>
       <p className="mt-2 text-xs text-slate-400">{count === 1 ? '1 link' : `${count} links`}</p>
     </li>
