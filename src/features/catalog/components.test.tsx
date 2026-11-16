@@ -86,6 +86,30 @@ describe('LinkItem', () => {
   })
 })
 
+describe('LinkItem com dia da semana', () => {
+  const aula = { ...link, weekday: 2 } as unknown as CatalogLink
+  function setupAula(showWeekday?: boolean) {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    return render(
+      <QueryClientProvider client={client}>
+        <MemoryRouter>
+          <ul>
+            <LinkItem link={aula} categoryName="Aulas ao vivo" showWeekday={showWeekday} />
+          </ul>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+  }
+  it('mostra o dia da semana da aula', () => {
+    setupAula()
+    expect(screen.getByText('Terça-feira')).toBeTruthy()
+  })
+  it('não repete o dia quando o bloco já é o dia', () => {
+    setupAula(false)
+    expect(screen.queryByText('Terça-feira')).toBeNull()
+  })
+})
+
 describe('CourseAccess', () => {
   const plat = { ...link, id: 'p1', title: 'Plataforma', url: 'https://plataforma.test/login', kind: 'platform' } as unknown as CatalogLink
   function setupAccess(platform: CatalogLink | undefined) {

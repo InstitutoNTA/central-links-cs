@@ -90,7 +90,7 @@ export function CourseAccess({ courseName, platform, mec }: { courseName: string
   )
 }
 
-export function LinkItem({ link, categoryName }: { link: CatalogLink; categoryName?: string }) {
+export function LinkItem({ link, categoryName, showWeekday = true }: { link: CatalogLink; categoryName?: string; showWeekday?: boolean }) {
   const favorites = useFavoriteIds()
   const toggle = useToggleFavorite()
   const isFavorite = favorites.data?.includes(link.id) ?? false
@@ -100,7 +100,14 @@ export function LinkItem({ link, categoryName }: { link: CatalogLink; categoryNa
       <div className="pr-8">
         <span className="font-medium text-slate-100">{link.title}</span>
         {link.description && <span className="mt-1 block text-sm text-slate-400">{link.description}</span>}
-        {categoryName && <span className="mt-2 inline-block rounded-full bg-grafite-700 px-2 py-0.5 text-xs text-slate-300">{categoryName}</span>}
+        {(categoryName || (showWeekday && link.weekday)) && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {showWeekday && link.weekday && (
+              <span className="rounded-full bg-azul/15 px-2 py-0.5 text-xs font-medium text-azul">{WEEKDAY_LABELS[link.weekday]}</span>
+            )}
+            {categoryName && <span className="rounded-full bg-grafite-700 px-2 py-0.5 text-xs text-slate-300">{categoryName}</span>}
+          </div>
+        )}
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         <OpenLinkButton link={link} />
@@ -154,7 +161,7 @@ export function LiveClasses({ groups, today }: { groups: WeekdayGroup[]; today: 
             </h3>
             <ul className="space-y-2">
               {g.links.map((l) => (
-                <LinkItem key={l.id} link={l} />
+                <LinkItem key={l.id} link={l} showWeekday={false} />
               ))}
             </ul>
           </section>
