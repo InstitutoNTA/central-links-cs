@@ -3,6 +3,7 @@ import { FormMessage } from '../../components/ui/AuthCard'
 import { Button } from '../../components/ui/Button'
 import { Field } from '../../components/ui/Field'
 import { Select } from '../../components/ui/Select'
+import { CopyLinkButton } from '../catalog/components'
 import { filterLinks, WEEKDAY_LABELS, type CatalogLink } from '../catalog/filters'
 import { Badge, Panel } from './AdminLayout'
 import { useAdminCategories, useAdminCourses, useAdminLinks, useSaveLink, useSetLinkActive } from './queries'
@@ -166,7 +167,17 @@ export function LinksAdminPage() {
                   {l.link_courses.map((lc) => <Badge key={lc.course_id}>{courseName(lc.course_id)}</Badge>)}
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href={l.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Abrir ${l.title} em nova aba`}
+                  className="inline-flex items-center rounded-md bg-azul px-3 py-1.5 text-xs font-medium text-grafite-950 transition hover:bg-azul/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-azul/60"
+                >
+                  Abrir ↗
+                </a>
+                <CopyLinkButton link={l} />
                 <Button variant="ghost" onClick={() => setEditing(l)} className="!px-3 !py-1.5">Editar</Button>
                 <Button
                   variant="ghost"

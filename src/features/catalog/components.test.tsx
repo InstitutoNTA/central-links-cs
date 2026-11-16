@@ -46,15 +46,24 @@ beforeEach(() => {
 describe('LinkItem', () => {
   it('abre em nova aba com rel seguro', () => {
     setup()
-    const a = screen.getByRole('link')
+    const a = screen.getByRole('link', { name: /Abrir/ })
     expect(a.getAttribute('target')).toBe('_blank')
     expect(a.getAttribute('rel')).toContain('noopener')
     expect(a.getAttribute('href')).toBe('https://exemplo.test/x')
   })
   it('registra o clique em link_clicks com o usuário logado', () => {
     setup()
-    fireEvent.click(screen.getByRole('link'))
+    fireEvent.click(screen.getByRole('link', { name: /Abrir/ }))
     expect(calls).toContainEqual({ table: 'link_clicks', op: 'insert', payload: { link_id: 'l1', user_id: 'user-1' } })
+  })
+  it('copia o link sem registrar clique', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+    setup()
+    fireEvent.click(screen.getByRole('button', { name: /Copiar link de Matrículas/ }))
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith('https://exemplo.test/x'))
+    expect(await screen.findByText('Copiado!')).toBeTruthy()
+    expect(calls.some((c) => c.table === 'link_clicks')).toBe(false)
   })
   it('favorita ao clicar na estrela', async () => {
     setup()

@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useFavoriteIds, useToggleFavorite, useTrackClick } from './favorites'
 import { WEEKDAY_LABELS, type CatalogLink, type Category, type LinkGroup, type WeekdayGroup } from './filters'
@@ -21,13 +22,45 @@ export function ExternalLink({ link, className = '', children }: { link: Catalog
   )
 }
 
+/** Copia o endereço do link para a área de transferência e avisa "Copiado!" por 2 segundos. Não conta como clique. */
+export function CopyLinkButton({ link, className = '' }: { link: CatalogLink; className?: string }) {
+  const [state, setState] = useState<'idle' | 'copied' | 'error'>('idle')
+  const timer = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearTimeout(timer.current), [])
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(link.url)
+      setState('copied')
+    } catch {
+      setState('error')
+    }
+    window.clearTimeout(timer.current)
+    timer.current = window.setTimeout(() => setState('idle'), 2000)
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      aria-label={`Copiar link de ${link.title}`}
+      className={`rounded-md border border-grafite-700 px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:bg-grafite-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-azul/60 ${className}`}
+    >
+      <span aria-live="polite">{state === 'copied' ? 'Copiado!' : state === 'error' ? 'Não foi possível copiar' : 'Copiar link'}</span>
+    </button>
+  )
+}
+
 /** "MEC" logo abaixo do nome do curso. Sem link cadastrado, mostra aviso (nada é inventado). */
 export function MecLink({ mec }: { mec: CatalogLink | undefined }) {
   if (!mec) return <span className="text-xs text-slate-400">MEC: ainda não cadastrado</span>
   return (
-    <ExternalLink link={mec} className="text-xs font-medium text-azul hover:underline">
-      MEC ↗
-    </ExternalLink>
+    <span className="inline-flex flex-wrap items-center gap-2">
+      <ExternalLink link={mec} className="text-xs font-medium text-azul hover:underline">
+        MEC ↗
+      </ExternalLink>
+      <CopyLinkButton link={mec} className="px-2 py-0.5" />
+    </span>
   )
 }
 
@@ -37,15 +70,22 @@ export function LinkItem({ link, categoryName }: { link: CatalogLink; categoryNa
   const isFavorite = favorites.data?.includes(link.id) ?? false
 
   return (
-    <li className="relative">
-      <ExternalLink
-        link={link}
-        className="block rounded-xl border border-grafite-700 bg-grafite-900 p-4 pr-12 transition hover:border-azul/60 hover:bg-grafite-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-azul/60"
-      >
-        <span className="font-medium text-slate-100">{link.title} <span aria-hidden className="text-azul">↗</span></span>
+    <li className="relative rounded-xl border border-grafite-700 bg-grafite-900 p-4 transition hover:border-azul/60">
+      <div className="pr-8">
+        <span className="font-medium text-slate-100">{link.title}</span>
         {link.description && <span className="mt-1 block text-sm text-slate-400">{link.description}</span>}
         {categoryName && <span className="mt-2 inline-block rounded-full bg-grafite-700 px-2 py-0.5 text-xs text-slate-300">{categoryName}</span>}
-      </ExternalLink>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <ExternalLink
+          link={link}
+          className="rounded-md bg-azul px-3 py-1.5 text-xs font-medium text-grafite-950 transition hover:bg-azul/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-azul/60"
+        >
+          <span className="sr-only">Abrir {link.title} em nova aba</span>
+          <span aria-hidden>Abrir ↗</span>
+        </ExternalLink>
+        <CopyLinkButton link={link} />
+      </div>
       <button
         type="button"
         aria-pressed={isFavorite}
