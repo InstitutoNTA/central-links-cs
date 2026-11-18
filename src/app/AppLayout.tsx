@@ -1,17 +1,15 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../features/auth/useAuth'
-import { ROLE_LABELS, type Role } from '../lib/roles'
-
-// Texto exibido no cabeçalho (o perfil técnico continua sendo "Administrador" em Meu perfil e na gestão de usuários).
-const HEADER_ROLE_LABELS: Record<Role, string> = { ...ROLE_LABELS, admin: 'Suporte pós-graduação CS' }
+import { ROLE_LABELS } from '../lib/roles'
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   `rounded-md px-3 py-1.5 text-sm transition ${isActive ? 'bg-grafite-800 text-azul' : 'text-slate-300 hover:text-slate-100'}`
 
 export function AppLayout() {
   const { profile, signOut } = useAuth()
-  const name = profile?.full_name?.trim() || profile?.email || ''
+  // No cabeçalho, a conta de administrador aparece com o nome da equipe; o nome pessoal continua em "Meu perfil".
+  const name = profile?.role === 'admin' ? 'Suporte pós-graduação CS' : profile?.full_name?.trim() || profile?.email || ''
 
   return (
     <div className="min-h-screen bg-grafite-950">
@@ -47,7 +45,7 @@ export function AppLayout() {
           <div className="flex items-center gap-3">
             <div className="text-right leading-tight">
               <p className="text-sm text-slate-200">{name}</p>
-              {profile && <p className="text-xs text-vermelho/90">{HEADER_ROLE_LABELS[profile.role]}</p>}
+              {profile && <p className="text-xs text-vermelho/90">{ROLE_LABELS[profile.role]}</p>}
             </div>
             <Button variant="ghost" onClick={() => void signOut()} className="!px-3 !py-1.5">
               Sair
