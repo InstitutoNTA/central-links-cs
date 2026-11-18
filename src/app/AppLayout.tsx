@@ -19,7 +19,7 @@ export function AppLayout() {
       <header className="border-b border-grafite-700 bg-grafite-900">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
           <span className="flex items-center gap-3">
-            <img src="/logo-nta.png" alt="Instituto NTA" width={53} height={36} className="h-9 w-auto rounded-md min-[1500px]:hidden" />
+            <img src="/logo-nta.png" alt="Instituto NTA" width={66} height={45} className="h-11 w-auto rounded-md min-[1500px]:hidden" />
             <span className="text-sm font-semibold tracking-wide text-slate-100">
               Central de Links <span className="text-azul">CS</span>
             </span>
@@ -58,7 +58,7 @@ export function AppLayout() {
         to="/"
         aria-label="Instituto NTA — ir para o início"
         className="fixed left-6 top-20 hidden min-[1500px]:block"
-        style={{ width: 'min(11rem, calc((100vw - 72rem) / 2 - 3rem))' }}
+        style={{ width: 'min(14rem, calc((100vw - 72rem) / 2 - 2.5rem))' }}
       >
         <img src="/logo-nta.png" alt="" width={212} height={144} className="h-auto w-full rounded-xl" />
       </Link>
