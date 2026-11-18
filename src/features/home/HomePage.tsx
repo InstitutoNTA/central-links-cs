@@ -1,13 +1,10 @@
 import { useMemo, useState } from 'react'
-import { useAuth } from '../auth/useAuth'
 import { CategoryChips, CourseCard, EmptyNote, GroupedLinks, LinkItem, LiveClasses, SearchBox } from '../catalog/components'
 import { filterLinks, generalLinks, groupByCategory, linksForCourse, liveClassesByDay, mecFor, platformFor, todayWeekday } from '../catalog/filters'
 import { useFavoriteIds } from '../catalog/favorites'
 import { useCategories, useCourses, useLinks } from '../catalog/queries'
 
 export function HomePage() {
-  const { profile } = useAuth()
-  const firstName = (profile?.full_name?.trim() || profile?.email || '').split(/[\s@]/)[0]
   const courses = useCourses()
   const categories = useCategories()
   const links = useLinks()
@@ -30,7 +27,7 @@ export function HomePage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-2xl font-semibold text-slate-100">Olá, {firstName}</h1>
+        <h1 className="text-2xl font-semibold text-slate-100">Olá time de CS</h1>
         <p className="mt-1 text-sm text-slate-400">Encontre rapidamente os acessos do dia a dia do time de CS.</p>
       </header>
 
