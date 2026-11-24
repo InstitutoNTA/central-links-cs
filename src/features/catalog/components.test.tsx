@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
 import type { CatalogLink } from './filters'
-import { CourseAccess, LinkItem } from './components'
+import { CourseAccess, GroupCard, LinkItem } from './components'
 
 const calls: { table: string; op: string; payload?: unknown }[] = []
 let favoriteRows: { link_id: string }[] = []
@@ -131,5 +131,35 @@ describe('CourseAccess', () => {
   it('avisa quando a plataforma ainda não foi cadastrada', () => {
     setupAccess(undefined)
     expect(screen.getByText('ainda não cadastrada')).toBeTruthy()
+  })
+})
+
+describe('GroupCard', () => {
+  const a = { ...link, id: 'g1', title: 'Plataforma', url: 'https://exemplo.test/plat', group_name: 'TMB' } as unknown as CatalogLink
+  const b = { ...link, id: 'g2', title: 'Renegociação', url: 'https://exemplo.test/reneg', group_name: 'TMB' } as unknown as CatalogLink
+  function setupGroup() {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    return render(
+      <QueryClientProvider client={client}>
+        <MemoryRouter>
+          <ul>
+            <GroupCard name="TMB" links={[a, b]} />
+          </ul>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+  }
+  it('mostra um cartão com o nome do grupo e uma linha por link, cada um com seu endereço', () => {
+    setupGroup()
+    expect(screen.getByText('TMB')).toBeTruthy()
+    expect(screen.getByText('Plataforma')).toBeTruthy()
+    expect(screen.getByText('Renegociação')).toBeTruthy()
+    expect(screen.getByRole('link', { name: /Abrir TMB – Plataforma/ }).getAttribute('href')).toBe('https://exemplo.test/plat')
+    expect(screen.getByRole('link', { name: /Abrir TMB – Renegociação/ }).getAttribute('href')).toBe('https://exemplo.test/reneg')
+  })
+  it('clicar em Abrir registra o clique do link certo', () => {
+    setupGroup()
+    fireEvent.click(screen.getByRole('link', { name: /Abrir TMB – Renegociação/ }))
+    expect(calls).toContainEqual({ table: 'link_clicks', op: 'insert', payload: { link_id: 'g2', user_id: 'user-1' } })
   })
 })

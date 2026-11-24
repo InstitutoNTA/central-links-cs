@@ -62,7 +62,7 @@ Regras de negócio que não dependem de tela ficam em arquivos puros, com testes
 | `profiles` | nome, e-mail, perfil (admin, gestor, colaborador), ativo |
 | `courses` | nome, slug, cor, ordem, ativo |
 | `categories` | nome, slug, ícone, ordem, ativo |
-| `links` | título, url, descrição, categoria, tipo (padrão, MEC ou plataforma), dia da semana (opcional), ativo, ordem |
+| `links` | título, url, descrição, categoria, tipo (padrão, MEC ou plataforma), dia da semana (opcional), cartão agrupado (opcional), ativo, ordem |
 | `link_courses` | liga um link a vários cursos |
 | `favorites` | usuário + link |
 | `link_clicks` | link, usuário, data e hora |
@@ -115,7 +115,7 @@ A regra é aplicada no banco (RLS em todas as tabelas). Esconder botões na tela
 
 ## Migrações
 
-`supabase/migrations/`, em ordem: estrutura (1), regras de acesso (2), cursos (3), correção da validação do MEC (4), índice (5), cor do Defesa Cibernética (6), salvar link e proteção do último admin (7), métricas de uso (8), dia da semana das aulas ao vivo (9), tipo de link "plataforma" (10).
+`supabase/migrations/`, em ordem: estrutura (1), regras de acesso (2), cursos (3), correção da validação do MEC (4), índice (5), cor do Defesa Cibernética (6), salvar link e proteção do último admin (7), métricas de uso (8), dia da semana das aulas ao vivo (9), tipo de link "plataforma" (10), cartão agrupado (11). Links com o mesmo `group_name` na mesma categoria aparecem juntos em um cartão, uma linha por link.
 
 ## Etapas
 

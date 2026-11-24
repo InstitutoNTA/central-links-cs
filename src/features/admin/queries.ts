@@ -71,6 +71,7 @@ export interface SaveLinkVars {
   active: boolean
   courseIds: string[]
   weekday: number | null
+  groupName: string | null
 }
 
 export function useSaveLink() {
@@ -85,6 +86,7 @@ export function useSaveLink() {
       p_active: v.active,
       p_course_ids: v.courseIds,
       p_weekday: v.weekday,
+      p_group_name: v.groupName,
     })
     if (error) throw error
   })

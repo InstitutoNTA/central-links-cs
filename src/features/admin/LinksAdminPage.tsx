@@ -21,6 +21,7 @@ function LinkForm({ initial, onDone }: { initial: CatalogLink | null; onDone: ()
   const isMec = kind === 'mec'
   const [courseIds, setCourseIds] = useState<string[]>(initial?.link_courses.map((c) => c.course_id) ?? [])
   const [weekday, setWeekday] = useState(initial?.weekday ? String(initial.weekday) : '')
+  const [groupName, setGroupName] = useState(initial?.group_name ?? '')
   const [active, setActive] = useState(initial?.active ?? true)
   const [problems, setProblems] = useState<string[]>([])
 
@@ -31,11 +32,11 @@ function LinkForm({ initial, onDone }: { initial: CatalogLink | null; onDone: ()
 
   function onSubmit(e: FormEvent) {
     e.preventDefault()
-    const found = validateLink({ title, url, description, kind, courseIds, weekday: weekday ? Number(weekday) : null })
+    const found = validateLink({ title, url, description, kind, courseIds, weekday: weekday ? Number(weekday) : null, groupName })
     setProblems(found)
     if (found.length > 0) return
     save.mutate(
-      { id: initial?.id ?? null, title, url, description, categoryId: categoryId || null, kind, active, courseIds, weekday: kind !== 'standard' || !weekday ? null : Number(weekday) },
+      { id: initial?.id ?? null, title, url, description, categoryId: categoryId || null, kind, active, courseIds, weekday: kind !== 'standard' || !weekday ? null : Number(weekday), groupName: kind !== 'standard' || !groupName.trim() ? null : groupName.trim() },
       { onSuccess: onDone },
     )
   }
@@ -51,6 +52,16 @@ function LinkForm({ initial, onDone }: { initial: CatalogLink | null; onDone: ()
           <option key={c.id} value={c.id}>{c.name}</option>
         ))}
       </Select>
+
+      {kind === 'standard' && (
+        <Field
+          label="Cartão agrupado (opcional)"
+          value={groupName}
+          onChange={(e) => setGroupName(e.target.value)}
+          maxLength={80}
+          hint='Para juntar links no mesmo cartão, use o mesmo nome neles (ex.: "TMB"). O "Nome do link" vira o nome da linha (ex.: "Plataforma", "Renegociação").'
+        />
+      )}
 
       {kind === 'standard' && (
         <Select label="Dia da aula ao vivo (opcional)" value={weekday} onChange={(e) => setWeekday(e.target.value)}>
@@ -166,6 +177,7 @@ export function LinksAdminPage() {
                   {!l.active && <Badge tone="vermelho">Desativado</Badge>}
                   {catName(l.category_id) && <Badge>{catName(l.category_id)}</Badge>}
                   {l.weekday && <Badge tone="azul">{WEEKDAY_LABELS[l.weekday]}</Badge>}
+                  {l.group_name && <Badge>Cartão: {l.group_name}</Badge>}
                   {l.link_courses.length === 0 && l.kind === 'standard' && !l.weekday && <Badge>Geral</Badge>}
                   {l.link_courses.map((lc) => <Badge key={lc.course_id}>{courseName(lc.course_id)}</Badge>)}
                 </div>

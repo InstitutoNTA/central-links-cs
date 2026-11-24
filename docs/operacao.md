@@ -9,6 +9,7 @@ Para quem administra a Central. Todas as tarefas do dia a dia são feitas dentro
 | Cadastrar ou editar um link | Administração > Links |
 | Cadastrar o MEC de um curso | Administração > Links > marcar "Este é o link do MEC" e escolher o curso |
 | Cadastrar uma aula ao vivo (com dia fixo) | Administração > Links > escolher o "Dia da aula ao vivo" e a categoria "Aulas ao vivo". Ela aparece na área "Aulas ao vivo" da tela inicial |
+| Juntar vários acessos em um só cartão (ex.: TMB com Plataforma e Renegociação) | Administração > Links > no campo "Cartão agrupado" use o mesmo nome (ex.: TMB) em cada link, na mesma categoria. O "Nome do link" vira o nome da linha dentro do cartão (ex.: Plataforma, Renegociação) |
 | Cadastrar planilha, OneDrive ou CRM | Administração > Links > escolher a categoria (Planilhas, Arquivos (OneDrive) ou CRM) e deixar os cursos em branco |
 | Tirar um link do ar | Administração > Links > Desativar (dá para reativar) |
 | Criar categorias | Administração > Categorias |

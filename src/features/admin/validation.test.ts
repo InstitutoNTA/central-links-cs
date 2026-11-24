@@ -48,3 +48,14 @@ describe('friendlyDbError', () => {
   it('traduz falta de permissão', () => expect(friendlyDbError({ code: '42501' })).toContain('permissão'))
   it('não vaza texto técnico', () => expect(friendlyDbError({ message: 'relation x does not exist' })).toBe('Não foi possível salvar. Tente novamente.'))
 })
+
+describe('validateLink cartão agrupado', () => {
+  const base: LinkInput = { title: 'Plataforma', url: 'https://exemplo.test', description: '', kind: 'standard', courseIds: [] }
+  it('aceita nome de cartão até 80 caracteres', () => {
+    expect(validateLink({ ...base, groupName: 'TMB' })).toEqual([])
+    expect(validateLink({ ...base, groupName: 'a'.repeat(80) })).toEqual([])
+  })
+  it('recusa nome de cartão com mais de 80 caracteres', () => {
+    expect(validateLink({ ...base, groupName: 'a'.repeat(81) })).toContain('O nome do cartão pode ter no máximo 80 caracteres.')
+  })
+})

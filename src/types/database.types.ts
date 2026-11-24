@@ -228,6 +228,7 @@ export type Database = {
           updated_at: string
           url: string
           weekday: number | null
+          group_name: string | null
         }
         Insert: {
           active?: boolean
@@ -242,6 +243,7 @@ export type Database = {
           updated_at?: string
           url: string
           weekday?: number | null
+          group_name?: string | null
         }
         Update: {
           active?: boolean
@@ -256,6 +258,7 @@ export type Database = {
           updated_at?: string
           url?: string
           weekday?: number | null
+          group_name?: string | null
         }
         Relationships: [
           {
@@ -340,6 +343,7 @@ export type Database = {
           p_title: string
           p_url: string
           p_weekday?: number | null
+          p_group_name?: string | null
         }
         Returns: string
       }

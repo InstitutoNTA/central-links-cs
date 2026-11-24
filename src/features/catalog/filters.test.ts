@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  filterLinks, generalLinks, groupByCategory, linksForCourse, liveClassesByDay, mecFor, normalize, platformFor, todayWeekday,
+  cardItems, filterLinks, generalLinks, groupByCategory, linkLabel, linksForCourse, liveClassesByDay, mecFor, normalize, platformFor, todayWeekday,
   type CatalogLink, type Category,
 } from './filters'
 
@@ -83,5 +83,29 @@ describe('aulas ao vivo', () => {
     expect(todayWeekday(new Date('2026-11-15T04:30:00Z'))).toBe(7)
     expect(todayWeekday(new Date('2026-11-16T02:00:00Z'))).toBe(7)
     expect(todayWeekday(new Date('2026-11-16T04:00:00Z'))).toBe(1)
+  })
+})
+
+describe('cartão agrupado', () => {
+  const tmbA = link({ id: 'a', title: 'Plataforma', group_name: 'TMB' })
+  const tmbB = link({ id: 'b', title: 'Renegociação', group_name: 'TMB' })
+  const solto = link({ id: 'c', title: 'CRM' })
+
+  it('junta os links com o mesmo nome em um cartão, na posição do primeiro', () => {
+    const items = cardItems([solto, tmbA, link({ id: 'd', title: 'Outro' }), tmbB])
+    expect(items.map((i) => i.kind)).toEqual(['single', 'group', 'single'])
+    const group = items[1]
+    expect(group.kind === 'group' && group.links.map((l) => l.id)).toEqual(['a', 'b'])
+  })
+  it('sem group_name (ou vazio) continua cartão comum', () => {
+    const items = cardItems([solto, link({ id: 'e', group_name: '  ' })])
+    expect(items.every((i) => i.kind === 'single')).toBe(true)
+  })
+  it('linkLabel mostra "Grupo – Nome" só quando há grupo', () => {
+    expect(linkLabel(tmbB)).toBe('TMB – Renegociação')
+    expect(linkLabel(solto)).toBe('CRM')
+  })
+  it('a busca por "tmb renegociação" acha o link do grupo', () => {
+    expect(filterLinks([tmbA, tmbB, solto], { query: 'tmb renegociacao' }).map((l) => l.id)).toEqual(['b'])
   })
 })

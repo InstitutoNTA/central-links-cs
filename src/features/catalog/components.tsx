@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useFavoriteIds, useToggleFavorite, useTrackClick } from './favorites'
-import { WEEKDAY_LABELS, type CatalogLink, type Category, type LinkGroup, type WeekdayGroup } from './filters'
+import { cardItems, linkLabel, WEEKDAY_LABELS, type CatalogLink, type Category, type LinkGroup, type WeekdayGroup } from './filters'
 
 /** Link externo: abre em nova aba, sem repassar a origem da Central, e registra o clique. */
 export function ExternalLink({ link, className = '', children }: { link: CatalogLink; className?: string; children: React.ReactNode }) {
@@ -90,15 +90,48 @@ export function CourseAccess({ courseName, platform, mec }: { courseName: string
   )
 }
 
-export function LinkItem({ link, categoryName, showWeekday = true }: { link: CatalogLink; categoryName?: string; showWeekday?: boolean }) {
+function FavoriteButton({ link, className }: { link: CatalogLink; className: string }) {
   const favorites = useFavoriteIds()
   const toggle = useToggleFavorite()
   const isFavorite = favorites.data?.includes(link.id) ?? false
+  const label = linkLabel(link)
+  return (
+    <button
+      type="button"
+      aria-pressed={isFavorite}
+      aria-label={isFavorite ? `Remover ${label} dos favoritos` : `Favoritar ${label}`}
+      onClick={() => toggle.mutate({ linkId: link.id, favorite: !isFavorite })}
+      className={`${className} rounded-md p-1 text-lg leading-none transition focus:outline-none focus-visible:ring-2 focus-visible:ring-azul/60 ${isFavorite ? 'text-vermelho' : 'text-slate-400 hover:text-slate-300'}`}
+    >
+      {isFavorite ? '★' : '☆'}
+    </button>
+  )
+}
 
+/** Cartão com vários acessos do mesmo assunto: uma linha por link (nome, Abrir, Copiar link), como nos cursos. */
+export function GroupCard({ name, links }: { name: string; links: CatalogLink[] }) {
+  return (
+    <li className="rounded-xl border border-grafite-700 bg-grafite-900 p-4 transition hover:border-azul/60">
+      <span className="font-medium text-slate-100">{name}</span>
+      <div className="mt-3 space-y-1.5">
+        {links.map((l) => (
+          <div key={l.id} className="flex flex-wrap items-center gap-2">
+            <span className="w-28 text-xs font-medium text-slate-300">{l.title}</span>
+            <OpenLinkButton link={l} label={linkLabel(l)} className="!px-2 !py-0.5" />
+            <CopyLinkButton link={l} label={linkLabel(l)} className="!px-2 !py-0.5" />
+            <FavoriteButton link={l} className="ml-auto !text-base" />
+          </div>
+        ))}
+      </div>
+    </li>
+  )
+}
+
+export function LinkItem({ link, categoryName, showWeekday = true }: { link: CatalogLink; categoryName?: string; showWeekday?: boolean }) {
   return (
     <li className="relative rounded-xl border border-grafite-700 bg-grafite-900 p-4 transition hover:border-azul/60">
       <div className="pr-8">
-        <span className="font-medium text-slate-100">{link.title}</span>
+        <span className="font-medium text-slate-100">{linkLabel(link)}</span>
         {link.description && <span className="mt-1 block text-sm text-slate-400">{link.description}</span>}
         {(categoryName || (showWeekday && link.weekday)) && (
           <div className="mt-2 flex flex-wrap gap-1.5">
@@ -113,15 +146,7 @@ export function LinkItem({ link, categoryName, showWeekday = true }: { link: Cat
         <OpenLinkButton link={link} />
         <CopyLinkButton link={link} />
       </div>
-      <button
-        type="button"
-        aria-pressed={isFavorite}
-        aria-label={isFavorite ? `Remover ${link.title} dos favoritos` : `Favoritar ${link.title}`}
-        onClick={() => toggle.mutate({ linkId: link.id, favorite: !isFavorite })}
-        className={`absolute right-3 top-3 rounded-md p-1 text-lg leading-none transition focus:outline-none focus-visible:ring-2 focus-visible:ring-azul/60 ${isFavorite ? 'text-vermelho' : 'text-slate-400 hover:text-slate-300'}`}
-      >
-        {isFavorite ? '★' : '☆'}
-      </button>
+      <FavoriteButton link={link} className="absolute right-3 top-3" />
     </li>
   )
 }
@@ -133,9 +158,9 @@ export function GroupedLinks({ groups }: { groups: LinkGroup[] }) {
         <section key={g.category?.id ?? 'sem-categoria'}>
           <h3 className="mb-3 text-sm font-medium uppercase tracking-wide text-slate-400">{g.category?.name ?? 'Sem categoria'}</h3>
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {g.links.map((l) => (
-              <LinkItem key={l.id} link={l} />
-            ))}
+            {cardItems(g.links).map((item) =>
+              item.kind === 'group' ? <GroupCard key={`grupo-${item.name}`} name={item.name} links={item.links} /> : <LinkItem key={item.link.id} link={item.link} />,
+            )}
           </ul>
         </section>
       ))}

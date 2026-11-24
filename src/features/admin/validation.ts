@@ -7,6 +7,7 @@ export interface LinkInput {
   kind: 'standard' | 'mec' | 'platform'
   courseIds: string[]
   weekday?: number | null
+  groupName?: string | null
 }
 
 /** Retorna a lista de problemas; vazia = pode salvar. Espelha as regras do banco. */
@@ -28,6 +29,7 @@ export function validateLink(input: LinkInput): string[] {
   if (input.weekday != null && (!Number.isInteger(input.weekday) || input.weekday < 1 || input.weekday > 7)) {
     errors.push('Dia da semana inválido.')
   }
+  if ((input.groupName ?? '').trim().length > 80) errors.push('O nome do cartão pode ter no máximo 80 caracteres.')
   if (input.kind === 'mec' && input.weekday != null) errors.push('O link do MEC não tem dia da semana.')
   if (input.kind === 'platform' && input.weekday != null) errors.push('O link da plataforma não tem dia da semana.')
   return errors

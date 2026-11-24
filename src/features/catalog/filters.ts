@@ -20,7 +20,7 @@ export function filterLinks(links: CatalogLink[], { query = '', categoryId = nul
   return links.filter((link) => {
     if (categoryId && link.category_id !== categoryId) return false
     if (terms.length === 0) return true
-    const haystack = normalize(`${link.title} ${link.description ?? ''}`)
+    const haystack = normalize(`${link.group_name ?? ''} ${link.title} ${link.description ?? ''}`)
     return terms.every((t) => haystack.includes(t))
   })
 }
@@ -93,4 +93,33 @@ export function groupByCategory(links: CatalogLink[], categories: Category[]): L
   const loose = links.filter((l) => !l.category_id || !known.has(l.category_id))
   if (loose.length > 0) groups.push({ category: null, links: loose })
   return groups
+}
+
+/** Nome completo do link fora do cartão agrupado: "TMB – Renegociação". Sem grupo, é só o título. */
+export function linkLabel(link: Pick<CatalogLink, 'title' | 'group_name'>): string {
+  return link.group_name ? `${link.group_name} – ${link.title}` : link.title
+}
+
+export type CardItem = { kind: 'single'; link: CatalogLink } | { kind: 'group'; name: string; links: CatalogLink[] }
+
+/** Junta em um só cartão os links com o mesmo group_name; o cartão fica na posição do primeiro deles. */
+export function cardItems(links: CatalogLink[]): CardItem[] {
+  const items: CardItem[] = []
+  const byName = new Map<string, Extract<CardItem, { kind: 'group' }>>()
+  for (const link of links) {
+    const name = link.group_name?.trim()
+    if (!name) {
+      items.push({ kind: 'single', link })
+      continue
+    }
+    const existing = byName.get(name)
+    if (existing) {
+      existing.links.push(link)
+    } else {
+      const group = { kind: 'group' as const, name, links: [link] }
+      byName.set(name, group)
+      items.push(group)
+    }
+  }
+  return items
 }

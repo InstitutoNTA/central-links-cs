@@ -29,6 +29,7 @@ const FIELD_LABELS: Record<string, string> = {
   kind: 'Tipo',
   active: 'Ativo',
   weekday: 'Dia da aula',
+  group_name: 'Cartão agrupado',
   sort_order: 'Ordem',
   color: 'Cor',
   slug: 'Identificador',
